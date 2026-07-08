@@ -152,8 +152,8 @@ function preferences() {
     const goalEl = document.querySelector('input[name="goal"]:checked');
     const gender = genderEl ? genderEl.value : "";
     const goal = goalEl ? goalEl.value : "";
-    const allergyEl = document.querySelector('.chip input:checked');
-    const allergies = allergyEl ? allergyEl.value : "None";
+    const allergies = Array.from(document.querySelectorAll('.chip input:checked'))
+    .map(el => el.value);
 
     const payload = { name, age, height, weight, gender, goal, allergies };
 
