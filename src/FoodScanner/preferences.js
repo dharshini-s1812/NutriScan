@@ -41,7 +41,7 @@ let token = localStorage.getItem("token")
     });
   });
 
-  const chips = Array.from(document.querySelectorAll('.chip'));
+    const chips = Array.from(document.querySelectorAll('.chip'));
   chips.forEach(chip => {
     chip.addEventListener('click', () => {
       const input = chip.querySelector('input');
@@ -57,12 +57,15 @@ let token = localStorage.getItem("token")
           }
         });
       } else if (!isNone && input.checked) {
-        const noneChip = chips.find(c => c.querySelector('input').value.toUpperCase === 'NONE');
-        noneChip.classList.remove('selected');
-        noneChip.querySelector('input').checked = false;
+        const noneChip = chips.find(c => c.querySelector('input').value.toUpperCase() === 'NONE'); 
+        if (noneChip) {
+          noneChip.classList.remove('selected');
+          noneChip.querySelector('input').checked = false;
+        }
       }
     });
   });
+
 
   function validateStep1(){
     return fullname.value.trim().length > 0 &&
