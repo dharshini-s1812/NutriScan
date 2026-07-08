@@ -135,6 +135,15 @@ let token = localStorage.getItem("token")
 })();
 
 function preferences() {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+
+    if (!token || !userId) {
+        alert("Session expired. Please log in again.");
+        window.location.href = "index.html";
+        return;
+    }
+
     const name = document.getElementById("fullname").value;
     const age = Number(document.getElementById("age").value);
     const height = Number(document.getElementById("height").value);
@@ -145,13 +154,9 @@ function preferences() {
     const goal = goalEl ? goalEl.value : "";
     const allergyEl = document.querySelector('.chip input:checked');
     const allergies = allergyEl ? allergyEl.value : "None";
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-        alert("Session expired. Please log in again.");
-        window.location.href = "index.html";
-        return;
-    }
+
     const payload = { name, age, height, weight, gender, goal, allergies };
+
     fetch(`${SERVER_URL}/preferences?userId=${userId}`, {
         method: "POST",
         headers: {
@@ -160,11 +165,13 @@ function preferences() {
         },
         body: JSON.stringify(payload)
     })
-    .then(response => {
+    .then(async response => {
+        const text = await response.text();
+        console.log("Status:", response.status, "Body:", text);
         if (!response.ok) {
-            throw new Error("Failed to save profile preferences.");
+            throw new Error(`Failed to save preferences (status ${response.status}): ${text}`);
         }
-        return response.json();
+        return text ? JSON.parse(text) : {};
     })
     .then(data => {
         alert("Preferences Saved Successfully!");
