@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NutriScan — Scan Food</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+  <style>
+    @keyframes amSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .am-tab {
+      flex: 1;
+      padding: 0.55rem 0.2rem;
+      border-radius: 10px;
+      border: 1.5px solid #E8E2D4;
+      background: none;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #6B6459;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+      text-align: center;
+    }
+
+    .am-tab:hover {
+      background: #F1ECE0;
+      border-color: #B6AFA2;
+    }
+
+    .am-tab.am-tab-active {
+      background: #1B4332;
+      color: #fff;
+      border-color: #1B4332;
+    }
+
+    #am-save-btn:not([disabled]) {
+      opacity: 1;
+    }
+
+    #am-save-btn:not([disabled]):hover {
+      background: #2D6A4F;
+      transform: translateY(-1px);
+    }
+
+    #am-save-btn:not([disabled]):active {
+      transform: translateY(0);
+    }
+  </style>
+
+</head>
+
+<body class="sbody">
+
+  <div class="flex justify-center min-h-screen">
+
+    <main class="flex-1 px-4 sm:px-6 md:px-10 py-6 sm:py-8 max-w-4xl w-full">
+
+      <div class="flex items-start sm:items-center gap-3">
+        <a href="Dashboard.html" class="btn-ghost focus-ring text-sm px-3 py-2 shrink-0">← Back</a>
+        <div>
+          <h1 class="font-display font-semibold text-2xl sm:text-3xl">Scan a meal</h1>
+          <p class="text-xs sm:text-sm mt-0.5" style="color:var(--ink-soft)">Choose how you'd like to add this meal.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 mt-6 sm:mt-7" role="tablist" aria-label="Scan method">
+        <button class="mode-tile active focus-ring w-full flex flex-col items-center justify-center p-4 text-center" id="tile-camera" role="tab" aria-selected="true">
+          <div class="icon-wrap mb-2"><img class="w-8 h-8 sm:w-10 sm:h-10 mx-auto" src="camera.png" alt="Camera icon"></div>
+          <span class="font-semibold text-xs sm:text-sm">Take a photo</span>
+        </button>
+        <button class="mode-tile focus-ring w-full flex flex-col items-center justify-center p-4 text-center" id="tile-gallery" role="tab" aria-selected="false">
+          <div class="icon-wrap mb-2"><img class="w-8 h-8 sm:w-10 sm:h-10 mx-auto" src="upload.png" alt="Gallery icon"></div>
+          <span class="font-semibold text-xs sm:text-sm">Upload photo</span>
+        </button>
+      </div>
+
+      <div class="stat-card mt-6" id="photo-card">
+
+        <div class="capture-stage min-h-[220px] sm:min-h-[300px] flex items-center justify-center relative" id="stage">
+
+          <div id="state-idle" class="flex flex-col items-center text-center px-4 sm:px-8" style="color:var(--ink-soft)">
+            <div class="text-4xl mb-3"><img id="idle-icon" class="w-12 h-12 sm:w-14 sm:h-14" src="food.png" alt="Food placeholder"></div>
+            <p class="font-semibold text-sm sm:text-base max-w-xs" style="color:var(--ink)" id="idle-title">Take a photo of your meal or a product barcode.</p>
+            <p class="text-xs sm:text-sm mt-1 max-w-xs" id="idle-subtitle">Good lighting helps NutriScan tell ingredients apart.</p>
+            <button class="btn-primary focus-ring mt-5 text-sm" id="primary-action">Open camera</button>
+          </div>
+
+          <div id="state-preview" class="hidden absolute inset-0">
+            <img id="preview-img" class="preview-img w-full h-full object-cover" alt="Captured meal photo" src="">
+            <div class="scan-frame">
+              <span class="corner tl"></span><span class="corner tr"></span>
+              <span class="corner bl"></span><span class="corner br"></span>
+              <div class="scan-line"></div>
+            </div>
+            <div class="absolute bottom-5 left-0 right-0 flex items-center justify-center gap-3 bg-black/40 py-2 px-4 backdrop-blur-sm">
+              <div class="spinner"></div>
+              <span class="text-white font-semibold text-xs sm:text-sm" id="scanning-label">Analyzing image...</span>
+            </div>
+          </div>
+
+          <div id="state-error" class="hidden flex flex-col items-center text-center px-4 sm:px-8">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl mb-3"
+              style="background:#F6D8D8; color:var(--rose)">!</div>
+            <p class="font-semibold text-sm sm:text-base" style="color:var(--rose)" id="error-title">Couldn't read that photo</p>
+            <p class="text-xs sm:text-sm mt-1 max-w-sm" style="color:var(--ink-soft)" id="error-subtitle">The image was too blurry to identify ingredients with confidence.</p>
+            <div class="flex flex-wrap gap-3 mt-5 justify-center">
+              <button class="btn-ghost focus-ring text-sm" id="retry-action">Try again</button>
+              <button class="btn-primary focus-ring text-sm" id="manual-action-error" style="background:var(--rose)">Add manually</button>
+            </div>
+          </div>
+
+        </div>
+
+        <input type="file" id="file-camera" accept="image/*" capture="environment" class="hidden">
+        <input type="file" id="file-gallery" accept="image/*" class="hidden">
+
+        <div class="flex items-center justify-center mt-5 text-center">
+          <button class="text-xs sm:text-sm font-semibold focus-ring px-2 py-1 rounded-lg" style="color:var(--ink-soft)" id="manual-link">
+            Prefer to type it in? <span style="color:var(--forest); text-decoration:underline">Add meal manually</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="stat-card mt-6 hidden" id="result-panel">
+        <div class="flex items-center justify-between gap-2">
+          <h2 class="font-display font-semibold text-lg sm:text-xl">Looks like…</h2>
+          <span class="text-[10px] sm:text-xs font-semibold px-2.5 py-1 rounded-full shrink-0"
+            style="background:#E6F4EC; color:var(--sage-deep)">92% confident</span>
+        </div>
+        
+        <div class="flex items-center gap-4 mt-4">
+          <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0"
+            style="background:var(--cream-2)">🍛</div>
+          <div class="min-w-0">
+            <p class="font-semibold text-base sm:text-lg truncate" id="food-title">Food</p>
+            <p class="text-xs sm:text-sm truncate" style="color:var(--ink-soft)" id="food-serving">Serving</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
+          <div class="result-row flex-col items-start gap-0.5 p-3 rounded-xl border" style="border-color:var(--line)">
+            <span class="text-[11px] sm:text-xs" style="color:var(--ink-soft)">Calories</span>
+            <span class="font-display font-semibold text-base sm:text-lg" id="food-calories">0</span>
+          </div>
+          <div class="result-row flex-col items-start gap-0.5 p-3 rounded-xl border" style="border-color:var(--line)">
+            <span class="text-[11px] sm:text-xs" style="color:var(--ink-soft)">Protein</span>
+            <span class="font-display font-semibold text-base sm:text-lg" id="food-protein">0 g</span>
+          </div>
+          <div class="result-row flex-col items-start gap-0.5 p-3 rounded-xl border" style="border-color:var(--line)">
+            <span class="text-[11px] sm:text-xs" style="color:var(--ink-soft)">Carbs</span>
+            <span class="font-display font-semibold text-base sm:text-lg" id="food-carbs">0 g</span>
+          </div>
+          <div class="result-row flex-col items-start gap-0.5 p-3 rounded-xl border" style="border-color:var(--line)">
+            <span class="text-[11px] sm:text-xs" style="color:var(--ink-soft)">Fat</span>
+            <span class="font-display font-semibold text-base sm:text-lg" id="food-fat">0 g</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 mt-6">
+          <button class="btn-ghost focus-ring flex-1 py-2.5 text-sm order-2 sm:order-1" id="not-right">Not quite right</button>
+          <button id="log-meal-btn" class="btn-primary focus-ring flex-1 py-2.5 text-sm order-1 sm:order-2"
+            onclick="openAddMealModal(currentMealObject)">Log this meal</button>
+        </div>
+      </div>
+
+      <div class="stat-card mt-6 hidden" id="manual-panel">
+        <div class="flex items-center justify-between gap-2">
+          <h2 class="font-display font-semibold text-lg sm:text-xl">Add meal manually</h2>
+          <button class="text-sm font-semibold focus-ring shrink-0" style="color:var(--ink-soft)" id="manual-close">Close</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
+          <label class="flex flex-col gap-1.5 text-xs sm:text-sm font-semibold">
+            Meal name
+            <input type="text" placeholder="e.g. Vegetable biryani"
+              class="focus-ring px-3.5 py-2.5 rounded-xl border text-sm font-normal w-full" style="border-color:var(--line)">
+          </label>
+          <label class="flex flex-col gap-1.5 text-xs sm:text-sm font-semibold">
+            Meal type
+            <select class="focus-ring px-3.5 py-2.5 rounded-xl border text-sm font-normal w-full bg-white"
+              style="border-color:var(--line)">
+              <option>Breakfast</option>
+              <option>Lunch</option>
+              <option>Snack</option>
+              <option>Dinner</option>
+            </select>
+          </label>
+          <label class="flex flex-col gap-1.5 text-xs sm:text-sm font-semibold">
+            Calories (kcal)
+            <input type="number" placeholder="e.g. 410"
+              class="focus-ring px-3.5 py-2.5 rounded-xl border text-sm font-normal w-full" style="border-color:var(--line)">
+          </label>
+          <label class="flex flex-col gap-1.5 text-xs sm:text-sm font-semibold">
+            Protein (g)
+            <input type="number" placeholder="e.g. 9"
+              class="focus-ring px-3.5 py-2.5 rounded-xl border text-sm font-normal w-full" style="border-color:var(--line)">
+          </label>
+          <label class="flex flex-col gap-1.5 text-xs sm:text-sm font-semibold">
+            Carbs (g)
+            <input type="number" placeholder="e.g. 68"
+              class="focus-ring px-3.5 py-2.5 rounded-xl border text-sm font-normal w-full" style="border-color:var(--line)">
+          </label>
+          <label class="flex flex-col gap-1.5 text-xs sm:text-sm font-semibold">
+            Fat (g)
+            <input type="number" placeholder="e.g. 12"
+              class="focus-ring px-3.5 py-2.5 rounded-xl border text-sm font-normal w-full" style="border-color:var(--line)">
+          </label>
+        </div>
+        <button class="btn-primary focus-ring mt-6 w-full text-sm py-3">Save meal</button>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="add-meal-overlay" style="
+  position:fixed; inset:0; z-index:50;
+  background:rgba(27,67,50,0.45);
+  display:none; align-items:center; justify-content:center;
+  " class="p-4 sm:p-6" aria-modal="true" role="dialog" aria-labelledby="am-title">
+
+    <div style="
+    background:#fff; border-radius:22px; width:100%; max-width:430px;
+    border:1px solid #E8E2D4; overflow:hidden;
+    box-shadow:0 24px 60px -16px rgba(27,67,50,0.22);
+    animation: amSlideIn 0.2s ease;
+  ">
+
+      <div class="p-4 sm:p-6 pb-0 flex items-start justify-between gap-2">
+        <div>
+          <p id="am-title"
+            style="font-family:'Fraunces',serif; font-size:1.25rem; font-weight:600; color:#2D2A26; margin:0;">Add a meal</p>
+          <p style="font-size:0.8rem; color:#6B6459; margin:3px 0 0;">Log what you ate to track your nutrition.</p>
+        </div>
+        <button onclick="closeAddMealModal()" aria-label="Close" style="
+        background:none; border:none; cursor:pointer; color:#6B6459;
+        font-size:1.5rem; line-height:1; padding:0.2rem; border-radius:8px;
+        transition:background 0.12s;
+      " onmouseover="this.style.background='#F1ECE0'" onmouseout="this.style.background='none'" class="shrink-0">×</button>
+      </div>
+
+      <div class="px-4 sm:px-6 pt-4 flex flex-wrap sm:flex-nowrap gap-1.5" role="tablist" aria-label="Meal type" id="am-tabs">
+        <button class="am-tab am-tab-active" data-meal="BREAKFAST" onclick="amSelectTab(this)" role="tab" aria-selected="true">Breakfast</button>
+        <button class="am-tab" data-meal="LUNCH" onclick="amSelectTab(this)" role="tab" aria-selected="false">Lunch</button>
+        <button class="am-tab" data-meal="DINNER" onclick="amSelectTab(this)" role="tab" aria-selected="false">Dinner</button>
+        <button class="am-tab" data-meal="SNACK" onclick="amSelectTab(this)" role="tab" aria-selected="false">Snack</button>
+      </div>
+
+      <div class="p-4 sm:p-6">
+        <div style="margin-bottom:1rem;">
+          <label for="am-food-name" id="foodname"
+            style="display:block; font-size:0.8rem; font-weight:600; color:#6B6459; margin-bottom:6px;">Food name</label>
+          <input id="am-food-name" type="text" placeholder="e.g. Masala dosa, Chicken rice…" oninput="amCheckValid()"
+            autocomplete="off"
+            style="width:100%; border-radius:12px; border:1.5px solid #E8E2D4; padding:0.8rem 1rem; font-size:0.9rem; color:#2D2A26; background:#fff; box-sizing:border-box; transition:border-color 0.15s, box-shadow 0.15s; outline:none;"
+            onfocus="this.style.borderColor='#2D6A4F';this.style.boxShadow='0 0 0 4px rgba(82,183,136,0.15)'"
+            onblur="this.style.borderColor='#E8E2D4';this.style.boxShadow='none'">
+        </div>
+        
+        <div style="margin-bottom:1.5rem;">
+          <label for="am-portion" id="portion"
+            style="display:block; font-size:0.8rem; font-weight:600; color:#6B6459; margin-bottom:6px;">Portion</label>
+          <select id="am-portion"
+            style="width:100%; border-radius:12px; border:1.5px solid #E8E2D4; padding:0.8rem 1rem; font-size:0.9rem; color:#2D2A26; background:#fff; box-sizing:border-box; outline:none; appearance:none; -webkit-appearance:none; background-image: url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%236B6459\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><polyline points=\'6 9 12 15 18 9\'></polyline></svg>'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1rem;">
+            <option value="SMALL">Small</option>
+            <option value="MEDIUM" selected>Medium</option>
+            <option value="LARGE">Large</option>
+          </select>
+        </div>
+
+        <div class="flex gap-3">
+          <button onclick="closeAddMealModal()"
+            style="flex:1; padding:0.85rem; border-radius:12px; border:1.5px solid #E8E2D4; background:none; font-size:0.92rem; font-weight:600; color:#6B6459; cursor:pointer; transition:background 0.12s;"
+            onmouseover="this.style.background='#F1ECE0'" onmouseout="this.style.background='none'">Cancel</button>
+          <button id="am-save-btn" onclick="amSaveMeal()" disabled
+            style="flex:2; padding:0.85rem; border-radius:12px; border:none; background:#1B4332; color:#fff; font-size:0.92rem; font-weight:700; cursor:pointer; transition:background 0.12s, transform 0.1s;">Add meal</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast" style="
+  position:fixed; bottom:1.75rem; left:50%; transform:translateX(-50%) translateY(12px);
+  background:#1B4332; color:#fff; padding:0.7rem 1.4rem; border-radius:10px;
+  font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:500;
+  opacity:0; pointer-events:none; z-index:60;
+  transition:opacity 0.22s ease, transform 0.22s ease;
+" class="w-[calc(100%-2rem)] max-w-sm text-center" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="Scanner.js"></script>
+
+</body>
+
+</html>

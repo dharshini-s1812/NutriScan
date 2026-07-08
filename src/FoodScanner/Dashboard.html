@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NutriScan — Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="pb-24 lg:pb-0">
+
+  <div class="flex flex-col lg:flex-row min-h-screen">
+
+    <header class="lg:hidden flex items-center justify-between px-6 py-4 border-b sticky top-0 z-40"
+      style="background:var(--card); border-color:var(--line);">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl flex items-center justify-center text-base">
+          <span style="filter:saturate(1.4)"><img class="h-11 w-11" src="logo.png"></span>
+        </div>
+        <span class="font-display font-semibold text-lg" style="color:var(--forest)">NutriScan</span>
+      </div>
+      <div class="px-4 py-1 rounded-full text-xs font-semibold" style="background:var(--cream-2); color:var(--forest)">
+        <span class="inline-flex items-center gap-1.5">
+          <img class="h-10 w-10" src="streak.png" alt="Streak icon"> <span id="streak"></span>-day streak
+        </span>
+      </div>
+    </header>
+
+    <aside class="sidebar hidden lg:flex w-64 shrink-0 border-r flex-col sticky top-0 h-screen"
+      style="border-color:var(--line); background:var(--card);">
+      <div class="p-7">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center text-lg">
+            <span style="filter:saturate(1.4)"><img class="h-10 w-10" src="logo.png"></span>
+          </div>
+          <span class="font-display font-semibold text-xl" style="color:var(--forest)">NutriScan</span>
+        </div>
+      </div>
+
+      <nav class="px-4 flex flex-col gap-1">
+        <a href="Dashboard.html" class="nav-item active focus-ring"><span class="ic">⌂</span> Dashboard</a>
+        <a href="History.html" class="nav-item focus-ring"><span class="ic">↻</span> History</a>
+        <a href="Stats.html" class="nav-item focus-ring"><span class="ic">▤</span> Statistics</a>
+        <a href="profile.html" class="nav-item focus-ring"><span class="ic">◐</span> Profile</a>
+      </nav>
+
+      <div class="mt-auto"></div>
+
+      <div class="p-4 mx-4 rounded-2xl texture" style="background:var(--cream-2); border:1px solid var(--line)">
+        <p class="text-sm font-semibold flex items-center gap-1.5" style="color:var(--forest)">
+          <img class="h-10 w-10" src="streak.png" alt="Streak icon">
+          <span><span id="streakd"></span>-day streak</span>
+        </p>
+        <p class="text-xs mt-1" style="color:var(--ink-soft)">Log one more meal today to keep it going.</p>
+      </div>
+      <br>
+    </aside>
+
+    <main class="flex-1 px-4 sm:px-6 md:px-10 py-6 md:py-8 max-w-6xl mx-auto w-full">
+
+      <div class="flex items-start justify-between flex-wrap gap-6 border-b pb-6" style="border-color: var(--line);">
+
+        <div>
+          <h1 class="font-display font-semibold text-3xl md:text-4xl" style="color:var(--ink)" id="dynamic-greeting">
+            Good morning</h1>
+          <p class="mt-1 text-sm md:text-base" style="color:var(--ink-soft)" id="dynamic-date">Here's where today
+            stands.</p>
+        </div>
+
+
+        <div class="flex flex-wrap items-center gap-4 w-full sm:w-auto mt-2 sm:mt-0">
+          <div class="flex items-center gap-3 px-4 py-2 rounded-xl border bg-white shadow-sm"
+            style="border-color:var(--line, #E8E2D4);">
+            <span class="text-xl"><img class="h-10 w-10" src="water.png"></span>
+            <div class="flex flex-col">
+              <span class="text-sm font-bold text-[#2D2A26]">2.5L Water</span>
+              <span class="text-xs font-medium text-[#6B6459]">Daily goal</span>
+            </div>
+          </div>
+
+          <button class="btn-primary focus-ring flex items-center gap-2 w-full sm:w-auto justify-center py-3 sm:py-2.5"
+            onclick="location.href='scanner.html'">
+            <img class="h-10 w-10" src="pic.png"> Scan a meal
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mt-6 md:mt-8">
+        <div class="stat-card flex items-center gap-4">
+          <div class="ring-wrap shrink-0">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <circle class="ring-track" cx="36" cy="36" r="30" stroke-width="7" />
+              <circle id="calorieRing" class="ring-progress" cx="36" cy="36" r="30" stroke-width="7"
+                stroke="var(--forest)" stroke-dasharray="188.4" stroke-dashoffset="64" />
+            </svg>
+            <span id="caloriePercent" class="absolute font-display font-semibold text-sm">0%</span>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide" style="color:var(--ink-soft)">Calories</p>
+            <p id="calorieTaken" class="font-display font-semibold text-2xl mt-0.5">0</p>
+            <p class="text-xs" style="color:var(--ink-soft)">of <span id="calorieGoal">0</span> kcal</p>
+          </div>
+        </div>
+
+        <div class="stat-card flex items-center gap-4">
+          <div class="ring-wrap shrink-0">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <circle class="ring-track" cx="36" cy="36" r="30" stroke-width="7" />
+              <circle id="proteinRing" class="ring-progress" cx="36" cy="36" r="30" stroke-width="7"
+                stroke="var(--apricot-deep)" stroke-dasharray="188.4" stroke-dashoffset="71.6" />
+            </svg>
+            <span id="proteinPercent" class="absolute font-display font-semibold text-sm">0%</span>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide" style="color:var(--ink-soft)">Protein</p>
+            <p id="proteinTaken" class="font-display font-semibold text-2xl mt-0.5">0g</p>
+            <p class="text-xs" style="color:var(--ink-soft)">of <span id="proteinGoal">0</span>g target</p>
+          </div>
+        </div>
+
+        <div class="stat-card flex items-center gap-4">
+          <div class="ring-wrap shrink-0">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <circle class="ring-track" cx="36" cy="36" r="30" stroke-width="7" />
+              <circle id="carbsRing" class="ring-progress" cx="36" cy="36" r="30" stroke-width="7"
+                stroke="var(--sage-deep)" stroke-dasharray="188.4" stroke-dashoffset="62.2" />
+            </svg>
+            <span id="carbsPercent" class="absolute font-display font-semibold text-sm">0%</span>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide" style="color:var(--ink-soft)">Carbs</p>
+            <p id="carbsTaken" class="font-display font-semibold text-2xl mt-0.5">0g</p>
+            <p class="text-xs" style="color:var(--ink-soft)">of <span id="carbsGoal">0</span>g target</p>
+          </div>
+        </div>
+
+        <div class="stat-card flex items-center gap-4">
+          <div class="ring-wrap shrink-0">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <circle class="ring-track" cx="36" cy="36" r="30" stroke-width="7" />
+              <circle id="fatRing" class="ring-progress" cx="36" cy="36" r="30" stroke-width="7" stroke="#6C4EA3"
+                stroke-dasharray="188.4" stroke-dashoffset="75.4" />
+            </svg>
+            <span id="fatPercent" class="absolute font-display font-semibold text-sm">0%</span>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide" style="color:var(--ink-soft)">Fat</p>
+            <p id="fatTaken" class="font-display font-semibold text-2xl mt-0.5">0g</p>
+            <p class="text-xs" style="color:var(--ink-soft)">of <span id="fatGoal">0</span>g target</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6 md:mt-8">
+
+        <!-- Left Column -->
+        <div class="lg:col-span-3 flex flex-col gap-6">
+          <div class="stat-card">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <h2 class="font-display font-semibold text-xl md:text-2xl">Today's meals</h2>
+              <button class="btn-ghost text-xs md:text-sm focus-ring px-3 py-1.5" onclick="openAddMealModal()">+ Add
+                manually</button>
+            </div>
+            <div id="mealContainer" class="flex flex-col gap-3 mt-5"></div>
+          </div>
+
+          <div class="scan-card p-6 md:p-8 texture" style="background: #1B4332;">
+            <div class="flex items-center justify-between flex-col-reverse sm:flex-row gap-6">
+              <div class="max-w-sm text-center sm:text-left w-full">
+                <h2 class="font-display font-semibold text-2xl md:text-3xl">Ready for the next one?</h2>
+                <p class="mt-2 text-sm md:text-base opacity-90">Snap a photo of your plate, NutriScan reads the
+                  ingredients and logs the macros for you.</p>
+                <button onclick="location.href='scanner.html'"
+                  class="mt-5 font-bold px-6 py-3.5 rounded-xl focus-ring w-full sm:w-auto"
+                  style="background:#fff; color:var(--forest);">
+                  Scan food
+                </button>
+              </div>
+              <div class="text-5xl md:text-7xl opacity-90"><img class="h-20.5 w-20.5" src="scan.png"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="lg:col-span-2 flex flex-col gap-6">
+          <!-- Suggestions moved here, above Body Stats -->
+          <div class="stat-card" id="suggestions-card">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <h2 class="font-display font-semibold text-xl md:text-2xl">Suggested for you</h2>
+              <button class="btn-ghost text-xs md:text-sm focus-ring px-3 py-1.5" id="refresh-suggestions">↻</button>
+            </div>
+            <div id="suggestions-container" class="flex flex-col gap-3 mt-5">
+              <p class="text-sm" style="color:var(--ink-soft)">Loading suggestions…</p>
+            </div>
+          </div>
+
+          <div class="stat-card p-6">
+            <h2 class="font-display font-semibold text-xl text-[#2D2A26] mb-5">Body stats</h2>
+
+            <div class="grid grid-cols-2 gap-4 mb-5">
+              <div>
+                <label class="block text-xs font-semibold text-[#6B6459] mb-1.5">Height</label>
+                <div class="flex items-center justify-between border border-[#E8E2D4] rounded-xl px-4 py-3 bg-white">
+                  <span id="height" class="text-sm font-medium text-[#2D2A26]"></span>
+                  <span class="text-xs text-[#6B6459]">cm</span>
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-[#6B6459] mb-1.5">Weight</label>
+                <div class="flex items-center justify-between border border-[#E8E2D4] rounded-xl px-4 py-3 bg-white">
+                  <span id="weight" class="text-sm font-medium text-[#2D2A26]"></span>
+                  <span class="text-xs text-[#6B6459]">kg</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-2xl p-4" style="background-color: var(--cream-2, #F1ECE0);">
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-xs font-bold tracking-wide text-[#6B6459] uppercase">BMI</span>
+                <span id="bmiValue" class="font-display font-bold text-2xl text-[#2D2A26]"></span>
+              </div>
+              <div class="relative w-full h-1.5 rounded-full mt-4 mb-2"
+                style="background: linear-gradient(to right, #A3C9A8 0%, #A3C9A8 40%, #E7C169 70%, #D96B62 100%);">
+                <div id="bmiPointer"
+                  class="absolute w-3.5 h-3.5 bg-white border-2 border-[#1B4332] rounded-full top-1/2 -translate-y-1/2 left-[41%] shadow-sm">
+                </div>
+              </div>
+
+              <div class="flex justify-between text-[10px] font-semibold text-[#6B6459] mt-2 px-0.5">
+                <span>Underweight</span>
+                <span>Normal</span>
+                <span>Overweight</span>
+                <span>Obese</span>
+              </div>
+              <div id="bmiCategory" class="text-xs font-bold text-[#2D6A4F] mt-3">
+                Normal weight
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card p-5">
+            <span class="flex items-start gap-3">
+              <img class="w-10 h-10 shrink-0" src="barchart.png" alt="Bar chart icon">
+              <p class="text-sm text-slate-700 leading-relaxed mb-3">
+                Take a look at your complete macro and food distribution history logs to balance out your week
+                perfectly.
+              </p>
+            </span>
+
+            <a href="stats.html"
+              class="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-emerald-700 hover:text-emerald-900 transition-colors">
+              <span>View Food Distribution Dashboard</span>
+              <span>→</span>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 border-t flex justify-around items-center py-2 z-50 shadow-lg"
+      style="background:var(--card); border-color:var(--line);">
+      <a href="Dashboard.html" class="flex flex-col items-center gap-0.5 text-xs font-bold p-2 transition-all"
+        style="color:var(--forest)">
+        <span class="text-xl">⌂</span>
+        <span>Home</span>
+      </a>
+      <a href="History.html" class="flex flex-col items-center gap-0.5 text-xs font-medium p-2 transition-all"
+        style="color:var(--ink-soft)">
+        <span class="text-xl">↻</span>
+        <span>History</span>
+      </a>
+      <a href="stats.html" class="flex flex-col items-center gap-0.5 text-xs font-medium p-2 transition-all"
+        style="color:var(--ink-soft)">
+        <span class="text-xl">▤</span>
+        <span>Stats</span>
+      </a>
+      <a href="profile.html" class="flex flex-col items-center gap-0.5 text-xs font-medium p-2 transition-all"
+        style="color:var(--ink-soft)">
+        <span class="text-xl">◐</span>
+        <span>Profile</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <!-- Modal and Toast code remains identical -->
+  <div id="add-meal-overlay"
+    style="position:fixed; inset:0; z-index:50; background:rgba(27,67,50,0.45); display:none; align-items:center; justify-content:center; padding:1.5rem;"
+    aria-modal="true" role="dialog" aria-labelledby="am-title">
+    <div
+      style="background:#fff; border-radius:22px; width:100%; max-width:430px; border:1px solid #E8E2D4; overflow:hidden; box-shadow:0 24px 60px -16px rgba(27,67,50,0.22); animation: amSlideIn 0.2s ease;">
+      <div
+        style="padding:1.4rem 1.5rem 0; display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">
+        <div>
+          <p id="am-title"
+            style="font-family:'Fraunces',serif; font-size:1.25rem; font-weight:600; color:#2D2A26; margin:0;">Add a
+            meal</p>
+          <p style="font-size:0.8rem; color:#6B6459; margin:3px 0 0;">Log what you ate to track your nutrition.</p>
+        </div>
+        <button onclick="closeAddMealModal()" aria-label="Close"
+          style="background:none; border:none; cursor:pointer; color:#6B6459; font-size:1.3rem; line-height:1; padding:0.2rem; border-radius:8px; transition:background 0.12s;"
+          onmouseover="this.style.background='#F1ECE0'" onmouseout="this.style.background='none'">×</button>
+      </div>
+
+      <div style="display:flex; gap:6px; padding:1rem 1.5rem 0;" role="tablist" aria-label="Meal type" id="am-tabs">
+        <button class="am-tab am-tab-active" data-meal="BREAKFAST" onclick="amSelectTab(this)" role="tab"
+          aria-selected="true">Breakfast</button>
+        <button class="am-tab" data-meal="LUNCH" onclick="amSelectTab(this)" role="tab"
+          aria-selected="false">Lunch</button>
+        <button class="am-tab" data-meal="DINNER" onclick="amSelectTab(this)" role="tab"
+          aria-selected="false">Dinner</button>
+        <button class="am-tab" data-meal="SNACK" onclick="amSelectTab(this)" role="tab"
+          aria-selected="false">Snack</button>
+      </div>
+
+      <div style="padding:1.25rem 1.5rem;">
+        <div style="margin-bottom:1rem;">
+          <label for="am-food-name" id="foodname"
+            style="display:block; font-size:0.8rem; font-weight:600; color:#6B6459; margin-bottom:6px;">Food
+            name</label>
+          <input id="am-food-name" type="text" placeholder="e.g. Masala dosa, Chicken rice…" oninput="amCheckValid()"
+            autocomplete="off"
+            style="width:100%; border-radius:12px; border:1.5px solid #E8E2D4; padding:0.8rem 1rem; font-size:0.9rem; color:#2D2A26; background:#fff; box-sizing:border-box; transition:border-color 0.15s, box-shadow 0.15s; outline:none;"
+            onfocus="this.style.borderColor='#2D6A4F';this.style.boxShadow='0 0 0 4px rgba(82,183,136,0.15)'"
+            onblur="this.style.borderColor='#E8E2D4';this.style.boxShadow='none'">
+        </div>
+        <div style="margin-bottom:1rem;">
+          <div>
+            <label for="am-portion" id="portion"
+              style="display:block; font-size:0.8rem; font-weight:600; color:#6B6459; margin-bottom:6px;">Portion</label>
+            <select id="am-portion"
+              style="width:100%; border-radius:12px; border:1.5px solid #E8E2D4; padding:0.8rem 1rem; font-size:0.9rem; color:#2D2A26; background:#fff; box-sizing:border-box; outline:none; appearance:none; -webkit-appearance:none; background-image: url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%236B6459\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><polyline points=\'6 9 12 15 18 9\'></polyline></svg>'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1rem;">
+              <option value="SMALL">Small</option>
+              <option value="MEDIUM" selected>Medium</option>
+              <option value="LARGE">Large</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="padding:0 1.5rem 1.5rem; display:flex; gap:10px;">
+          <button onclick="closeAddMealModal()"
+            style="flex:1; padding:0.85rem; border-radius:12px; border:1.5px solid #E8E2D4; background:none; font-size:0.92rem; font-weight:600; color:#6B6459; cursor:pointer; transition:background 0.12s;"
+            onmouseover="this.style.background='#F1ECE0'" onmouseout="this.style.background='none'">Cancel</button>
+          <button id="am-save-btn" onclick="amSaveMeal()" disabled
+            style="flex:2; padding:0.85rem; border-radius:12px; border:none; background:#1B4332; color:#fff; font-size:0.92rem; font-weight:700; cursor:pointer; transition:background 0.12s, transform 0.1s;">Add
+            meal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"
+    style="position:fixed; bottom:1.75rem; left:50%; transform:translateX(-50%); background:#1B4332; color:#fff; padding:0.7rem 1.4rem; border-radius:10px; font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:500; opacity:0; pointer-events:none; z-index:60;"
+    role="status" aria-live="polite"></div>
+
+  <style>
+    @keyframes amSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .am-tab {
+      flex: 1;
+      padding: 0.55rem 0.2rem;
+      border-radius: 10px;
+      border: 1.5px solid #E8E2D4;
+      background: none;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #6B6459;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+    }
+
+    .am-tab:hover {
+      background: #F1ECE0;
+      border-color: #B6AFA2;
+    }
+
+    .am-tab.am-tab-active {
+      background: #1B4332;
+      color: #fff;
+      border-color: #1B4332;
+    }
+
+    #am-save-btn:not([disabled]) {
+      opacity: 1;
+    }
+
+    #am-save-btn:not([disabled]):hover {
+      background: #2D6A4F;
+      transform: translateY(-1px);
+    }
+
+    #am-save-btn:not([disabled]):active {
+      transform: translateY(0);
+    }
+
+    #suggestions-container .suggestion-card {
+      transition: opacity 0.18s ease;
+    }
+  </style>
+
+  <script src="dashboard.js"></script>
+</body>
+
+</html>

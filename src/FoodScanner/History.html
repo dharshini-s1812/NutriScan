@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NutriScan - History</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #FAF8F3;
+      --ink: #2D2A26;
+      --ink-soft: #6B6459;
+      --forest: #1B4332;
+      --sage: #52B788;
+      --sage-deep: #2D6A4F;
+      --apricot: #F4A261;
+      --apricot-deep: #E07A2C;
+      --line: #E8E2D4;
+      --card: #FFFFFF;
+      --cream-2: #F1ECE0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .font-display {
+      font-family: 'Fraunces', serif;
+    }
+
+    .focus-ring:focus-visible {
+      outline: 2px solid var(--sage-deep);
+      outline-offset: 2px;
+      border-radius: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.7rem 1rem;
+      border-radius: 12px;
+      color: var(--ink-soft);
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: background 0.15s ease, color 0.15s ease;
+      text-decoration: none;
+    }
+
+    .nav-item:hover {
+      background: var(--cream-2);
+      color: var(--ink);
+    }
+
+    .nav-item.active {
+      background: var(--forest);
+      color: #fff;
+    }
+
+    .nav-item .ic {
+      font-size: 1.05rem;
+      line-height: 1;
+      opacity: 0.9;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 1.5rem;
+      position: relative;
+    }
+
+    .meal-history-row {
+      display: flex;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+      transition: all 0.15s ease;
+    }
+
+    .meal-history-row:hover {
+      border-color: var(--sage);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(27, 67, 50, 0.03);
+    }
+
+    .tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+    }
+
+    .tag-breakfast {
+      background: #FDEFE0;
+      color: var(--apricot-deep);
+    }
+
+    .tag-lunch {
+      background: #E6F4EC;
+      color: var(--sage-deep);
+    }
+
+    .tag-dinner {
+      background: #EAEFFC;
+      color: #3A64D8;
+    }
+
+    .tag-snack {
+      background: #EFEAF6;
+      color: #6C4EA3;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      filter: invert(18%) sepia(20%) saturate(1142%) hue-rotate(110deg) brightness(95%) contrast(92%);
+    }
+  </style>
+</head>
+
+<body class="pb-24 lg:pb-0">
+
+  <div class="flex flex-col lg:flex-row min-h-screen">
+
+    <header class="lg:hidden flex items-center justify-between px-6 py-4 border-b sticky top-0 z-40"
+      style="background:var(--card); border-color:var(--line);">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl flex items-center justify-center">
+          <img class="w-10 h-10" src="logo.png"></div>
+        <span class="font-display font-semibold text-lg" style="color:var(--forest)">NutriScan</span>
+      </div>
+    </header>
+
+
+    <aside class="sidebar hidden lg:flex w-64 shrink-0 border-r flex-col sticky top-0 h-screen"
+      style="border-color:var(--line); background:var(--card);">
+      <div class="p-7">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center text-lg" ><img class="w=10 h-10" src="logo.png">
+          </div>
+          <span class="font-display font-semibold text-xl" style="color:var(--forest)">NutriScan</span>
+        </div>
+      </div>
+      <nav class="px-4 flex flex-col gap-1">
+        <a href="Dashboard.html" class="nav-item focus-ring"><span class="ic">⌂</span> Dashboard</a>
+        <a href="History.html" class="nav-item active focus-ring"><span class="ic">↻</span> History</a>
+        <a href="Stats.html" class="nav-item focus-ring"><span class="ic">▤</span> Statistics</a>
+        <a href="profile.html" class="nav-item focus-ring"><span class="ic">◐</span> Profile</a>
+      </nav>
+    </aside>
+
+
+    <main class="flex-1 px-4 sm:px-6 md:px-10 py-6 md:py-8 max-w-5xl mx-auto w-full">
+
+
+      <div class="mb-6 md:mb-8">
+        <h1 class="font-display font-semibold text-3xl md:text-4xl" style="color:var(--ink)">Log History</h1>
+        <p class="mt-1 text-sm text-[var(--ink-soft)]">Review, filter, modify, or manage your historical dietary logs.
+        </p>
+      </div>
+
+      <div class="stat-card p-4 md:p-6 mb-6">
+        <div class="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
+
+          <div class="flex flex-col gap-1.5 min-w-[200px]">
+            <label class="text-xs font-bold uppercase tracking-wide opacity-75">Target Date</label>
+            <div class="relative flex items-center">
+              <input type="date" value="" id="selected-date"
+                class="w-full px-4 py-2.5 rounded-xl border font-medium text-sm focus:outline-none focus:border-[var(--sage-deep)] focus:ring-1 focus:ring-[var(--sage-deep)] bg-transparent"
+                style="border-color: var(--line); color: var(--ink);">
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1.5 flex-1">
+            <label class="text-xs font-bold uppercase tracking-wide opacity-75">Category Filter</label>
+            <div id="meal-filters" class="flex flex-wrap gap-1.5 p-1 rounded-xl"
+              style="background: var(--bg); border: 1px solid var(--line);">
+              <button data-type="ALL"
+                class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-[var(--forest)] text-white shadow-sm transition-all filter-btn active">All
+                Meals</button>
+              <button data-type="BREAKFAST"
+                class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-[var(--ink-soft)] hover:text-[var(--ink)] transition-all filter-btn">Breakfast</button>
+              <button data-type="LUNCH"
+                class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-[var(--ink-soft)] hover:text-[var(--ink)] transition-all filter-btn">Lunch</button>
+              <button data-type="DINNER"
+                class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-[var(--ink-soft)] hover:text-[var(--ink)] transition-all filter-btn">Dinner</button>
+              <button data-type="SNACK"
+                class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-[var(--ink-soft)] hover:text-[var(--ink)] transition-all filter-btn">Snacks</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3">
+
+        <div class="flex justify-between items-center px-2 mb-1">
+          <h3 class="font-display font-medium text-lg text-[var(--ink)]">Logged Items</h3>
+        </div>
+
+        <div id="meal-container" class="flex flex-col gap-3"></div>
+
+
+      </div>
+  </div>
+
+  </div>
+  </main>
+  <nav class="lg:hidden fixed bottom-0 left-0 right-0 border-t flex justify-around items-center py-2 z-50 shadow-lg"
+    style="background:var(--card); border-color:var(--line);">
+    <a href="Dashboard.html" class="flex flex-col items-center gap-0.5 text-xs font-medium p-2"
+      style="color:var(--ink-soft)">
+      <span class="text-xl">⌂</span><span>Home</span>
+    </a>
+    <a href="History.html" class="flex flex-col items-center gap-0.5 text-xs font-bold p-2" style="color:var(--forest)">
+      <span class="text-xl">↻</span><span>History</span>
+    </a>
+    <a href="Stats.html" class="flex flex-col items-center gap-0.5 text-xs font-medium p-2"
+      style="color:var(--ink-soft)">
+      <span class="text-xl">▤</span><span>Stats</span>
+    </a>
+    <a href="profile.html" class="flex flex-col items-center gap-0.5 text-xs font-medium p-2"
+      style="color:var(--ink-soft)">
+      <span class="text-xl">◐</span><span>Profile</span>
+    </a>
+  </nav>
+
+  </div>
+  <div id="deleteModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+
+    <div class="bg-white rounded-2xl p-6 w-80 shadow-xl">
+
+      <h3 class="text-lg font-semibold mb-2">
+        Delete Meal?
+      </h3>
+
+      <p class="text-sm text-gray-600 mb-6">
+        This action cannot be undone.
+      </p>
+
+      <div class="flex justify-end gap-3">
+        <button onclick="closeDeleteModal()" class="px-4 py-2 rounded-lg border">
+          Cancel
+        </button>
+        <button id="confirmDeleteBtn" class="px-4 py-2 rounded-lg bg-red-600 text-white">
+          Delete
+        </button>
+      </div>
+    </div>
+
+  </div>
+  <div id="toast"
+    style="position:fixed; bottom:1.75rem; left:50%; transform:translateX(-50%) translateY(12px); background:#1B4332; color:#fff; padding:0.7rem 1.4rem; border-radius:10px; font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:500; opacity:0; pointer-events:none; z-index:60; transition:opacity 0.22s ease, transform 0.22s ease;"
+    role="status" aria-live="polite"></div>
+  <script src="history.js">
+  </script>
+</body>
+
+</html>
