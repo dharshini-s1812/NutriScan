@@ -34,7 +34,6 @@ let currentMealObject = null;
 
   let currentMode = 'camera';
 
-
   const modeCopy = {
       camera:{
           icon:'/camera.png',
@@ -297,11 +296,15 @@ document.addEventListener("keydown",function(e){
 });
 
 function openAddMealModal(product) {
+    const nameInput = document.getElementById("am-food-name");
     if (currentMealObject) {
-        document.getElementById("am-food-name").value =
-            currentMealObject.foodName ?? currentMealObject.productName ?? "";
+        nameInput.value = currentMealObject.foodName ?? currentMealObject.productName ?? "";
+        nameInput.readOnly = true;
+        nameInput.classList.add("am-input-locked");
     } else {
-        document.getElementById("am-food-name").value = "";
+        nameInput.value = "";
+        nameInput.readOnly = false;
+        nameInput.classList.remove("am-input-locked");
     }
     document.getElementById("am-portion").value = "MEDIUM";
     overlay.style.display = "flex";

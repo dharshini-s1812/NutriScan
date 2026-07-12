@@ -60,9 +60,9 @@ public class UserMealService {
                                     HttpStatus.NOT_FOUND,
                                     "Food not found: " + request.getFoodName()));
             int grams = switch (request.getPortionSize()) {
-                case SMALL -> 150;
-                case MEDIUM -> 350;
-                case LARGE -> 600;
+                case SMALL -> 100;
+                case MEDIUM -> 250;
+                case LARGE -> 500;
             };
             double factor = grams / 100.0;
             meal.setCalories(food.getCalories() * factor);

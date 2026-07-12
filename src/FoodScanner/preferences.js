@@ -25,6 +25,60 @@ let token = localStorage.getItem("token")
   const closeModal  = document.getElementById('close-modal');
   const acceptTerms = document.getElementById('accept-terms');
 
+  // ---- Numeric field guarding (age / height / weight) ----
+  // Each entry: { el, min, max, errorEl }
+  const numericFields = [
+    { el: age,    min: 10, max: 100, errorEl: document.getElementById('age-error') },
+    { el: height, min: 50, max: 250, errorEl: document.getElementById('height-error') },
+    { el: weight, min: 10, max: 400, errorEl: document.getElementById('weight-error') },
+  ];
+
+  // Block characters that would let someone type a negative, decimal-exponent,
+  // or otherwise invalid number: "-", "+", "e"/"E", "."
+  const blockedKeys = ['-', '+', 'e', 'E', '.'];
+  numericFields.forEach(({ el }) => {
+    el.addEventListener('keydown', (e) => {
+      if (blockedKeys.includes(e.key)) {
+        e.preventDefault();
+      }
+    });
+
+    // Belt-and-suspenders: strip out anything non-numeric that slips through
+    // (e.g. pasted text like "-25" or "1e5"), and clamp to the field's range.
+    el.addEventListener('input', () => {
+      let raw = el.value;
+      let cleaned = raw.replace(/[^0-9]/g, '');
+      if (cleaned !== raw) {
+        el.value = cleaned;
+      }
+    });
+
+    // On blur, clamp into range so a stray out-of-range value can't be submitted.
+    el.addEventListener('blur', () => {
+      if (el.value === '') return;
+      const num = Number(el.value);
+      const field = numericFields.find(f => f.el === el);
+      if (Number.isNaN(num)) {
+        el.value = '';
+        return;
+      }
+      if (num < field.min) el.value = String(field.min);
+      if (num > field.max) el.value = String(field.max);
+    });
+  });
+
+  function fieldIsValid({ el, min, max }) {
+    if (el.value.trim() === '') return false;
+    const num = Number(el.value);
+    if (Number.isNaN(num)) return false;
+    return num >= min && num <= max;
+  }
+
+  function showFieldError(field, show) {
+    field.el.style.borderColor = show ? 'var(--apricot-deep)' : 'var(--line)';
+    if (field.errorEl) field.errorEl.classList.toggle('hidden', !show);
+  }
+
   genderGroup.querySelectorAll('.seg-option').forEach(opt => {
     opt.addEventListener('click', () => {
       genderGroup.querySelectorAll('.seg-option').forEach(o => o.classList.remove('selected'));
@@ -65,15 +119,17 @@ let token = localStorage.getItem("token")
   });
 
   function validateStep1(){
-    return fullname.value.trim().length > 0 &&
-           age.value && height.value && weight.value &&
-           document.querySelector('input[name="gender"]:checked');
+    const namedOk = fullname.value.trim().length > 0;
+    const numbersOk = numericFields.every(fieldIsValid);
+    const genderOk = !!document.querySelector('input[name="gender"]:checked');
+    return namedOk && numbersOk && genderOk;
   }
 
   toStep2.addEventListener('click', () => {
     if (!validateStep1()){
-      [fullname, age, height, weight].forEach(el => {
-        if (!el.value.trim()) el.style.borderColor = 'var(--apricot-deep)';
+      if (!fullname.value.trim()) fullname.style.borderColor = 'var(--apricot-deep)';
+      numericFields.forEach(field => {
+        showFieldError(field, !fieldIsValid(field));
       });
       if (!document.querySelector('input[name="gender"]:checked')){
         genderGroup.querySelectorAll('.seg-option').forEach(o => o.style.borderColor = 'var(--apricot-deep)');
@@ -101,8 +157,9 @@ let token = localStorage.getItem("token")
     heroSubtitle.textContent = 'A few details help NutriScan personalize your targets.';
   });
 
-  [fullname, age, height, weight].forEach(el => {
-    el.addEventListener('input', () => { el.style.borderColor = 'var(--line)'; });
+  fullname.addEventListener('input', () => { fullname.style.borderColor = 'var(--line)'; });
+  numericFields.forEach(field => {
+    field.el.addEventListener('input', () => { showFieldError(field, false); });
   });
 
   genderGroup.querySelectorAll('.seg-option').forEach(opt => {
@@ -129,6 +186,13 @@ let token = localStorage.getItem("token")
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+    if (!validateStep1()) {
+      // Shouldn't normally happen since step 1 is gated, but guard anyway.
+      step2.classList.remove('active');
+      step1.classList.add('active');
+      numericFields.forEach(field => showFieldError(field, !fieldIsValid(field)));
+      return;
+    }
     if (!termsBox.checked) return;
     preferences();
   });
@@ -174,4 +238,27 @@ function preferences() {
         console.error("Error saving data:", error);
         alert(error.message);
     });
+}
+let toastTimer;
+function showToast(message, type = "success") {
+    const toast = document.getElementById("toast");
+    clearTimeout(toastTimer);
+    toast.className = "";
+    toast.classList.add(type);
+    const icons = {
+        success: "✓",
+        error: "✕",
+        warning: "⚠",
+        info: "ℹ"
+    };
+    toast.innerHTML = `
+        <span style="font-size:16px">${icons[type]}</span>
+        <span>${message}</span>
+    `;
+    requestAnimationFrame(() => {
+        toast.classList.add("show");
+    });
+    toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3000);
 }
