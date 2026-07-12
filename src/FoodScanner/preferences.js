@@ -95,7 +95,7 @@ let token = localStorage.getItem("token")
     });
   });
 
-  const chips = Array.from(document.querySelectorAll('.chip'));
+    const chips = Array.from(document.querySelectorAll('.chip'));
   chips.forEach(chip => {
     chip.addEventListener('click', () => {
       const input = chip.querySelector('input');
@@ -111,12 +111,15 @@ let token = localStorage.getItem("token")
           }
         });
       } else if (!isNone && input.checked) {
-        const noneChip = chips.find(c => c.querySelector('input').value.toUpperCase === 'NONE');
-        noneChip.classList.remove('selected');
-        noneChip.querySelector('input').checked = false;
+        const noneChip = chips.find(c => c.querySelector('input').value.toUpperCase() === 'NONE'); 
+        if (noneChip) {
+          noneChip.classList.remove('selected');
+          noneChip.querySelector('input').checked = false;
+        }
       }
     });
   });
+
 
   function validateStep1(){
     const namedOk = fullname.value.trim().length > 0;
@@ -199,6 +202,15 @@ let token = localStorage.getItem("token")
 })();
 
 function preferences() {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+
+    if (!token || !userId) {
+        alert("Session expired. Please log in again.");
+        window.location.href = "index.html";
+        return;
+    }
+
     const name = document.getElementById("fullname").value;
     const age = Number(document.getElementById("age").value);
     const height = Number(document.getElementById("height").value);
@@ -207,15 +219,11 @@ function preferences() {
     const goalEl = document.querySelector('input[name="goal"]:checked');
     const gender = genderEl ? genderEl.value : "";
     const goal = goalEl ? goalEl.value : "";
-    const allergyEl = document.querySelector('.chip input:checked');
-    const allergies = allergyEl ? allergyEl.value : "None";
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-        alert("Session expired. Please log in again.");
-        window.location.href = "index.html";
-        return;
-    }
+    const allergies = Array.from(document.querySelectorAll('.chip input:checked'))
+    .map(el => el.value);
+
     const payload = { name, age, height, weight, gender, goal, allergies };
+
     fetch(`${SERVER_URL}/preferences?userId=${userId}`, {
         method: "POST",
         headers: {
@@ -224,11 +232,13 @@ function preferences() {
         },
         body: JSON.stringify(payload)
     })
-    .then(response => {
+    .then(async response => {
+        const text = await response.text();
+        console.log("Status:", response.status, "Body:", text);
         if (!response.ok) {
-            throw new Error("Failed to save profile preferences.");
+            throw new Error(`Failed to save preferences (status ${response.status}): ${text}`);
         }
-        return response.json();
+        return text ? JSON.parse(text) : {};
     })
     .then(data => {
         alert("Preferences Saved Successfully!");
