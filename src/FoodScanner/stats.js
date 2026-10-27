@@ -1,4 +1,4 @@
-const API_BASE_URL = window.NUTRISCAN_API_BASE_URL || "https://nutriscan-production-186b.up.railway.app";
+const API_BASE_URL = window.NUTRISCAN_API_BASE_URL || "http://localhost:8080";
 
 const userId = localStorage.getItem("userId");
 const token = localStorage.getItem("token");
@@ -62,13 +62,22 @@ async function loadAnalytics(range) {
 
     document.getElementById("streak").textContent = data.streak;
 
-    const goal = data.calorieGoal;
+    const calorieTrend = data.calorieTrend ?? [];
+
+    const actualMax = Math.max(
+        ...calorieTrend.map(d => Number(d.calories) || 0),
+        0
+    );
+
+    // Give the chart a sensible rounded maximum
+    const maxCalories = Math.ceil(actualMax / 250) * 250 || 250;
+
     const labels = document.querySelectorAll(".trend-grid-line");
 
-    labels[0].textContent = goal;
-    labels[1].textContent = Math.round(goal * 0.75);
-    labels[2].textContent = Math.round(goal * 0.5);
-    labels[3].textContent = Math.round(goal * 0.25);
+    labels[0].textContent = maxCalories;
+    labels[1].textContent = Math.round(maxCalories * 0.75);
+    labels[2].textContent = Math.round(maxCalories * 0.5);
+    labels[3].textContent = Math.round(maxCalories * 0.25);
     const avgCalories = data.averageCalories ?? 0;
     document.getElementById("averageCalories").textContent = `${Math.round(avgCalories)} kcal`;
     document.getElementById("avgCalorieBadge").textContent = `Avg: ${avgCalories.toLocaleString()} kcal`;
@@ -83,8 +92,6 @@ async function loadAnalytics(range) {
       change.style.color = "var(--sage-deep)";
     }
 
-    const calorieTrend = data.calorieTrend ?? [];
-    const maxCalories = Math.max(...calorieTrend.map(d => d.calories), data.calorieGoal);
 
     calorieTrend.forEach((day, index) => {
       const dayLabel = document.getElementById(`day${index}`);

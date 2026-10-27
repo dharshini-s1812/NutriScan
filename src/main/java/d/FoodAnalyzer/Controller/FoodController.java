@@ -2,6 +2,7 @@ package d.FoodAnalyzer.Controller;
 
 import d.FoodAnalyzer.DTO.BarcodeResponse;
 import d.FoodAnalyzer.DTO.FoodResponse;
+import d.FoodAnalyzer.Model.Food;
 import d.FoodAnalyzer.Service.BarcodeService;
 import d.FoodAnalyzer.Service.FoodService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -35,5 +37,13 @@ public class FoodController {
                     )
             );
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Food>> searchFoods(@RequestParam String q) {
+
+        System.out.println("SEARCH FOOD QUERY: " + q);
+
+        return ResponseEntity.ok(foodService.searchFoodNames(q));
     }
 }

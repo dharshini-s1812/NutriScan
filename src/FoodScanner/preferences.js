@@ -1,6 +1,22 @@
-const SERVER_URL = "https://nutriscan-production-186b.up.railway.app"
+const SERVER_URL = "http://localhost:8080"
 let token = localStorage.getItem("token")
  const userId = localStorage.getItem("userId");
+
+let toastTimer;
+function showToast(message, type = "success") {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+  clearTimeout(toastTimer);
+  toast.textContent = message;
+  const colors = { success: "#1B4332", error: "#D62828", warning: "#E07A2C", info: "#2563EB" };
+  toast.style.background = colors[type] || colors.success;
+  toast.style.opacity = "1";
+  toast.style.transform = "translateX(-50%) translateY(0)";
+  toastTimer = setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(-50%) translateY(12px)";
+  }, 2800);
+}
 
 (function(){
   const form         = document.getElementById('profile-form');
@@ -25,60 +41,6 @@ let token = localStorage.getItem("token")
   const closeModal  = document.getElementById('close-modal');
   const acceptTerms = document.getElementById('accept-terms');
 
-  // ---- Numeric field guarding (age / height / weight) ----
-  // Each entry: { el, min, max, errorEl }
-  const numericFields = [
-    { el: age,    min: 10, max: 100, errorEl: document.getElementById('age-error') },
-    { el: height, min: 50, max: 250, errorEl: document.getElementById('height-error') },
-    { el: weight, min: 10, max: 400, errorEl: document.getElementById('weight-error') },
-  ];
-
-  // Block characters that would let someone type a negative, decimal-exponent,
-  // or otherwise invalid number: "-", "+", "e"/"E", "."
-  const blockedKeys = ['-', '+', 'e', 'E', '.'];
-  numericFields.forEach(({ el }) => {
-    el.addEventListener('keydown', (e) => {
-      if (blockedKeys.includes(e.key)) {
-        e.preventDefault();
-      }
-    });
-
-    // Belt-and-suspenders: strip out anything non-numeric that slips through
-    // (e.g. pasted text like "-25" or "1e5"), and clamp to the field's range.
-    el.addEventListener('input', () => {
-      let raw = el.value;
-      let cleaned = raw.replace(/[^0-9]/g, '');
-      if (cleaned !== raw) {
-        el.value = cleaned;
-      }
-    });
-
-    // On blur, clamp into range so a stray out-of-range value can't be submitted.
-    el.addEventListener('blur', () => {
-      if (el.value === '') return;
-      const num = Number(el.value);
-      const field = numericFields.find(f => f.el === el);
-      if (Number.isNaN(num)) {
-        el.value = '';
-        return;
-      }
-      if (num < field.min) el.value = String(field.min);
-      if (num > field.max) el.value = String(field.max);
-    });
-  });
-
-  function fieldIsValid({ el, min, max }) {
-    if (el.value.trim() === '') return false;
-    const num = Number(el.value);
-    if (Number.isNaN(num)) return false;
-    return num >= min && num <= max;
-  }
-
-  function showFieldError(field, show) {
-    field.el.style.borderColor = show ? 'var(--apricot-deep)' : 'var(--line)';
-    if (field.errorEl) field.errorEl.classList.toggle('hidden', !show);
-  }
-
   genderGroup.querySelectorAll('.seg-option').forEach(opt => {
     opt.addEventListener('click', () => {
       genderGroup.querySelectorAll('.seg-option').forEach(o => o.classList.remove('selected'));
@@ -95,7 +57,7 @@ let token = localStorage.getItem("token")
     });
   });
 
-    const chips = Array.from(document.querySelectorAll('.chip'));
+  const chips = Array.from(document.querySelectorAll('.chip'));
   chips.forEach(chip => {
     chip.addEventListener('click', () => {
       const input = chip.querySelector('input');
@@ -111,29 +73,25 @@ let token = localStorage.getItem("token")
           }
         });
       } else if (!isNone && input.checked) {
-        const noneChip = chips.find(c => c.querySelector('input').value.toUpperCase() === 'NONE'); 
-        if (noneChip) {
-          noneChip.classList.remove('selected');
-          noneChip.querySelector('input').checked = false;
-        }
+        const noneChip = chips.find(c => c.querySelector('input').value.toUpperCase() === 'NONE');
+        noneChip.classList.remove('selected');
+        noneChip.querySelector('input').checked = false;
       }
     });
   });
 
-
   function validateStep1(){
-    const namedOk = fullname.value.trim().length > 0;
-    const numbersOk = numericFields.every(fieldIsValid);
-    const genderOk = !!document.querySelector('input[name="gender"]:checked');
-    return namedOk && numbersOk && genderOk;
+    return fullname.value.trim().length > 0 &&
+           age.value && height.value && weight.value &&
+           document.querySelector('input[name="gender"]:checked');
   }
 
   toStep2.addEventListener('click', () => {
     if (!validateStep1()){
-      if (!fullname.value.trim()) fullname.style.borderColor = 'var(--apricot-deep)';
-      numericFields.forEach(field => {
-        showFieldError(field, !fieldIsValid(field));
+      [fullname, age, height, weight].forEach(el => {
+        if (!el.value.trim()) el.style.borderColor = 'var(--apricot-deep)';
       });
+      showToast("Please fill in all your details to continue.", "warning");
       if (!document.querySelector('input[name="gender"]:checked')){
         genderGroup.querySelectorAll('.seg-option').forEach(o => o.style.borderColor = 'var(--apricot-deep)');
       }
@@ -160,9 +118,8 @@ let token = localStorage.getItem("token")
     heroSubtitle.textContent = 'A few details help NutriScan personalize your targets.';
   });
 
-  fullname.addEventListener('input', () => { fullname.style.borderColor = 'var(--line)'; });
-  numericFields.forEach(field => {
-    field.el.addEventListener('input', () => { showFieldError(field, false); });
+  [fullname, age, height, weight].forEach(el => {
+    el.addEventListener('input', () => { el.style.borderColor = 'var(--line)'; });
   });
 
   genderGroup.querySelectorAll('.seg-option').forEach(opt => {
@@ -189,40 +146,66 @@ let token = localStorage.getItem("token")
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    if (!validateStep1()) {
-      // Shouldn't normally happen since step 1 is gated, but guard anyway.
-      step2.classList.remove('active');
-      step1.classList.add('active');
-      numericFields.forEach(field => showFieldError(field, !fieldIsValid(field)));
+    if (!termsBox.checked) {
+      showToast("Please accept the terms to finish setup.", "warning");
       return;
     }
-    if (!termsBox.checked) return;
     preferences();
   });
 })();
 
 function preferences() {
-    const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
-
-    if (!token || !userId) {
-        alert("Session expired. Please log in again.");
-        window.location.href = "index.html";
-        return;
-    }
-
     const name = document.getElementById("fullname").value;
     const age = Number(document.getElementById("age").value);
     const height = Number(document.getElementById("height").value);
     const weight = Number(document.getElementById("weight").value);
+
     const genderEl = document.querySelector('input[name="gender"]:checked');
     const goalEl = document.querySelector('input[name="goal"]:checked');
+
     const gender = genderEl ? genderEl.value : "";
     const goal = goalEl ? goalEl.value : "";
-    const allergies = Array.from(document.querySelectorAll('.chip input:checked'))
-    .map(el => el.value);
 
-    const payload = { name, age, height, weight, gender, goal, allergies };
+    // Get all selected allergies
+    const allergyEls = document.querySelectorAll('.chip input:checked');
+
+    const allergies = [];
+
+    allergyEls.forEach(input => {
+        if (input.value.toUpperCase() !== "NONE") {
+            allergies.push({
+                allergy: input.value
+            });
+        }
+    });
+
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+        showToast("Session expired. Please log in again.", "error");
+        setTimeout(() => { window.location.href = "index.html"; }, 1200);
+        return;
+    }
+
+    if (!goal) {
+        showToast("Please choose a goal.", "warning");
+        return;
+    }
+
+    const finishBtn = document.getElementById("finish-btn");
+    finishBtn.disabled = true;
+
+    const payload = {
+        name,
+        age,
+        height,
+        weight,
+        gender,
+        goal,
+        allergies
+    };
+
+    console.log("Sending payload:", payload);
 
     fetch(`${SERVER_URL}/preferences?userId=${userId}`, {
         method: "POST",
@@ -232,43 +215,21 @@ function preferences() {
         },
         body: JSON.stringify(payload)
     })
-    .then(async response => {
-        const text = await response.text();
-        console.log("Status:", response.status, "Body:", text);
+    .then(response => {
         if (!response.ok) {
-            throw new Error(`Failed to save preferences (status ${response.status}): ${text}`);
+            throw new Error("Failed to save profile preferences.");
         }
-        return text ? JSON.parse(text) : {};
+        return response.json();
     })
     .then(data => {
-        alert("Preferences Saved Successfully!");
-        window.location.href = "Dashboard.html";
+        showToast("Preferences saved successfully!", "success");
+        setTimeout(() => { window.location.href = "Dashboard.html"; }, 1000);
     })
     .catch(error => {
         console.error("Error saving data:", error);
-        alert(error.message);
+        showToast(error.message === "Failed to fetch"
+            ? "Unable to connect to the server. Please try again later."
+            : error.message, "error");
+        finishBtn.disabled = false;
     });
-}
-let toastTimer;
-function showToast(message, type = "success") {
-    const toast = document.getElementById("toast");
-    clearTimeout(toastTimer);
-    toast.className = "";
-    toast.classList.add(type);
-    const icons = {
-        success: "✓",
-        error: "✕",
-        warning: "⚠",
-        info: "ℹ"
-    };
-    toast.innerHTML = `
-        <span style="font-size:16px">${icons[type]}</span>
-        <span>${message}</span>
-    `;
-    requestAnimationFrame(() => {
-        toast.classList.add("show");
-    });
-    toastTimer = setTimeout(() => {
-        toast.classList.remove("show");
-    }, 3000);
 }

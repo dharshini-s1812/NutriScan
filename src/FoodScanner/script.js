@@ -1,4 +1,4 @@
-const SERVER_URL = "https://nutriscan-production-186b.up.railway.app"
+const SERVER_URL = "http://localhost:8080"
 
 async function login() {
 

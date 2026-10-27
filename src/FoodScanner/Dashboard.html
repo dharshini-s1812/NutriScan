@@ -51,6 +51,7 @@
         <a href="History.html" class="nav-item focus-ring"><span class="ic">↻</span> History</a>
         <a href="Stats.html" class="nav-item focus-ring"><span class="ic">▤</span> Statistics</a>
         <a href="profile.html" class="nav-item focus-ring"><span class="ic">◐</span> Profile</a>
+        <a href="About.html" class="nav-item focus-ring"><span class="ic">ⓘ</span> About</a>
       </nav>
 
       <div class="mt-auto"></div>
@@ -173,19 +174,23 @@
             <div id="mealContainer" class="flex flex-col gap-3 mt-5"></div>
           </div>
 
-          <div class="scan-card p-6 md:p-8 texture" style="background: #1B4332;">
-            <div class="flex items-center justify-between flex-col-reverse sm:flex-row gap-6">
+          <div class="scan-card about-hero p-6 md:p-8 texture">
+            <span class="blob blob-1"></span>
+            <span class="blob blob-2"></span>
+            <span class="blob blob-3"></span>
+
+            <div class="relative flex items-center justify-between flex-col-reverse sm:flex-row gap-6">
               <div class="max-w-sm text-center sm:text-left w-full">
                 <h2 class="font-display font-semibold text-2xl md:text-3xl">Ready for the next one?</h2>
                 <p class="mt-2 text-sm md:text-base opacity-90">Snap a photo of your plate, NutriScan reads the
                   ingredients and logs the macros for you.</p>
                 <button onclick="location.href='Scanner.html'"
-                  class="mt-5 font-bold px-6 py-3.5 rounded-xl focus-ring w-full sm:w-auto"
-                  style="background:#fff; color:var(--forest);">
+                        class="mt-5 font-bold px-6 py-3.5 rounded-xl focus-ring w-full sm:w-auto"
+                        style="background:#fff; color:var(--forest);">
                   Scan food
                 </button>
               </div>
-              <div class="text-5xl md:text-7xl opacity-90"><img class="h-20.5 w-20.5" src="scan.png"></div>
+              <div class="text-5xl md:text-7xl opacity-90"><img class="h-20.5 w-20.5" src="scan.png" alt="Scan a meal"></div>
             </div>
           </div>
         </div>
@@ -329,11 +334,17 @@
           <label for="am-food-name" id="foodname"
             style="display:block; font-size:0.8rem; font-weight:600; color:#6B6459; margin-bottom:6px;">Food
             name</label>
-          <input id="am-food-name" type="text" placeholder="e.g. Masala dosa, Chicken rice…" oninput="amCheckValid()"
-            autocomplete="off"
-            style="width:100%; border-radius:12px; border:1.5px solid #E8E2D4; padding:0.8rem 1rem; font-size:0.9rem; color:#2D2A26; background:#fff; box-sizing:border-box; transition:border-color 0.15s, box-shadow 0.15s; outline:none;"
-            onfocus="this.style.borderColor='#2D6A4F';this.style.boxShadow='0 0 0 4px rgba(82,183,136,0.15)'"
-            onblur="this.style.borderColor='#E8E2D4';this.style.boxShadow='none'">
+          <input id="am-food-name"
+                 type="text"
+                 placeholder="e.g. Masala dosa, Chicken rice…"
+                 list="am-food-list"
+                 oninput="amCheckValid()"
+                 autocomplete="off"
+                 style="width:100%; border-radius:12px; border:1.5px solid #E8E2D4; padding:0.8rem 1rem; font-size:0.9rem; color:#2D2A26; background:#fff; box-sizing:border-box; transition:border-color 0.15s, box-shadow 0.15s; outline:none;"
+                 onfocus="this.style.borderColor='#2D6A4F';this.style.boxShadow='0 0 0 4px rgba(82,183,136,0.15)'"
+                 onblur="this.style.borderColor='#E8E2D4';this.style.boxShadow='none'">
+
+          <datalist id="am-food-list"></datalist>
         </div>
         <div style="margin-bottom:1rem;">
           <div>
@@ -359,6 +370,7 @@
       </div>
     </div>
   </div>
+
 
   <div id="toast"
     style="position:fixed; bottom:1.75rem; left:50%; transform:translateX(-50%); background:#1B4332; color:#fff; padding:0.7rem 1.4rem; border-radius:10px; font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:500; opacity:0; pointer-events:none; z-index:60;"
@@ -417,6 +429,22 @@
     #suggestions-container .suggestion-card {
       transition: opacity 0.18s ease;
     }
+
+    .scan-card.about-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 100%);
+  color: #fff;
+}
+.about-hero .blob {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+}
+.about-hero .blob-1 { width: 320px; height: 320px; right: -80px; top: -90px; background: rgba(255, 255, 255, 0.07); }
+.about-hero .blob-2 { width: 200px; height: 200px; right: 140px; bottom: -110px; background: rgba(231, 193, 105, 0.18); }
+.about-hero .blob-3 { width: 120px; height: 120px; left: -40px; bottom: 30px; background: rgba(163, 201, 168, 0.18); }
   </style>
 
   <script src="dashboard.js"></script>

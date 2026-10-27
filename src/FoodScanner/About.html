@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriScan — About</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        html { scroll-behavior: smooth; }
+
+        /* Hero */
+        .about-hero {
+          position: relative;
+          overflow: hidden;
+          border-radius: 28px;
+          background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 100%);
+          color: #fff;
+        }
+        .about-hero .blob {
+          position: absolute;
+          border-radius: 9999px;
+          pointer-events: none;
+        }
+        .about-hero .blob-1 { width: 320px; height: 320px; right: -80px; top: -90px; background: rgba(255, 255, 255, 0.07); }
+        .about-hero .blob-2 { width: 200px; height: 200px; right: 140px; bottom: -110px; background: rgba(231, 193, 105, 0.18); }
+        .about-hero .blob-3 { width: 120px; height: 120px; left: -40px; bottom: 30px; background: rgba(163, 201, 168, 0.18); }
+
+        .hero-img {
+          filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.25));
+          animation: floaty 6s ease-in-out infinite;
+        }
+        @keyframes floaty {
+          0%, 100% { transform: translateY(0) rotate(-3deg); }
+          50% { transform: translateY(-10px) rotate(2deg); }
+        }
+
+        /* One orchestrated page-load reveal for the hero only */
+        .hero-in > * { opacity: 0; transform: translateY(14px); animation: rise 0.6s ease forwards; }
+        .hero-in > *:nth-child(1) { animation-delay: 0.05s; }
+        .hero-in > *:nth-child(2) { animation-delay: 0.15s; }
+        .hero-in > *:nth-child(3) { animation-delay: 0.25s; }
+        .hero-in > *:nth-child(4) { animation-delay: 0.35s; }
+        @keyframes rise { to { opacity: 1; transform: none; } }
+
+        @media (prefers-reduced-motion: reduce) {
+          .hero-img { animation: none; }
+          .hero-in > * { animation: none; opacity: 1; transform: none; }
+          html { scroll-behavior: auto; }
+        }
+
+        .chip-light {
+          background: rgba(255, 255, 255, 0.14);
+          border: 1px solid rgba(255, 255, 255, 0.22);
+        }
+
+        /* Stat band */
+        .band-item + .band-item { border-left: 1px solid var(--line, #E8E2D4); }
+        @media (max-width: 639px) {
+          .band-item:nth-child(3) { border-left: none; }
+          .band-item:nth-child(n+3) { border-top: 1px solid var(--line, #E8E2D4); }
+        }
+
+        /* Steps connector */
+        .step-line { position: relative; }
+        @media (min-width: 768px) {
+          .step-line::after {
+            content: "";
+            position: absolute;
+            top: 22px;
+            left: calc(50% + 28px);
+            width: calc(100% - 56px + 1.25rem);
+            border-top: 2px dashed var(--line, #E8E2D4);
+          }
+          .step-line:last-child::after { display: none; }
+        }
+
+        /* Feature icon tile */
+        .icon-tile {
+          width: 52px; height: 52px;
+          border-radius: 16px;
+          display: flex; align-items: center; justify-content: center;
+        }
+        .icon-tile img { width: 34px; height: 34px; object-fit: contain; }
+
+        .lift { transition: transform 0.18s ease, box-shadow 0.18s ease; }
+        .lift:hover { transform: translateY(-3px); box-shadow: 0 16px 30px -18px rgba(27, 67, 50, 0.35); }
+
+        /* FAQ */
+        details.faq { border: 1px solid var(--line, #E8E2D4); border-radius: 16px; background: #fff; }
+        details.faq summary {
+          list-style: none; cursor: pointer;
+          display: flex; align-items: center; justify-content: space-between; gap: 12px;
+          padding: 1rem 1.25rem; font-weight: 600; color: var(--ink, #2D2A26);
+        }
+        details.faq summary::-webkit-details-marker { display: none; }
+        details.faq .plus { transition: transform 0.2s ease; color: var(--forest, #1B4332); font-size: 1.25rem; line-height: 1; }
+        details.faq[open] .plus { transform: rotate(45deg); }
+        details.faq[open] { border-color: #A3C9A8; }
+        details.faq p { padding: 0 1.25rem 1.1rem; }
+    </style>
+</head>
+
+<body class="pb-24 lg:pb-0">
+
+<div class="flex flex-col lg:flex-row min-h-screen">
+
+    <!-- Mobile top bar -->
+    <header class="lg:hidden flex items-center justify-between px-6 py-4 border-b sticky top-0 z-40"
+            style="background:var(--card); border-color:var(--line);">
+        <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center text-base">
+                <span style="filter:saturate(1.4)"><img class="h-11 w-11" src="logo.png" alt="NutriScan logo"></span>
+            </div>
+            <span class="font-display font-semibold text-lg" style="color:var(--forest)">NutriScan</span>
+        </div>
+        <a href="Scanner.html" class="px-4 py-1.5 rounded-full text-xs font-semibold focus-ring"
+           style="background:var(--cream-2); color:var(--forest)">Scan a meal</a>
+    </header>
+
+    <!-- Desktop sidebar -->
+    <aside class="sidebar hidden lg:flex w-64 shrink-0 border-r flex-col sticky top-0 h-screen"
+           style="border-color:var(--line); background:var(--card);">
+        <div class="p-7">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center text-lg">
+                    <span style="filter:saturate(1.4)"><img class="h-10 w-10" src="logo.png" alt="NutriScan logo"></span>
+                </div>
+                <span class="font-display font-semibold text-xl" style="color:var(--forest)">NutriScan</span>
+            </div>
+        </div>
+
+        <nav class="px-4 flex flex-col gap-1">
+            <a href="Dashboard.html" class="nav-item focus-ring"><span class="ic">⌂</span> Dashboard</a>
+            <a href="History.html" class="nav-item focus-ring"><span class="ic">↻</span> History</a>
+            <a href="Stats.html" class="nav-item focus-ring"><span class="ic">▤</span> Statistics</a>
+            <a href="profile.html" class="nav-item focus-ring"><span class="ic">◐</span> Profile</a>
+            <a href="About.html" class="nav-item active focus-ring"><span class="ic">ⓘ</span> About</a>
+        </nav>
+
+        <div class="mt-auto"></div>
+
+        <div class="p-4 mx-4 mb-6 rounded-2xl texture" style="background:var(--cream-2); border:1px solid var(--line)">
+            <p class="text-sm font-semibold" style="color:var(--forest)">Hungry?</p>
+            <p class="text-xs mt-1" style="color:var(--ink-soft)">Snap your next meal and we'll log it for you.</p>
+            <a href="Scanner.html" class="btn-primary focus-ring mt-3 inline-flex items-center justify-center w-full py-2 text-xs">Scan a meal</a>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-1 px-4 sm:px-6 md:px-10 py-6 md:py-8 max-w-6xl mx-auto w-full">
+
+        <!-- HERO -->
+        <section class="about-hero texture p-7 sm:p-10 md:p-14">
+            <span class="blob blob-1"></span>
+            <span class="blob blob-2"></span>
+            <span class="blob blob-3"></span>
+
+            <div class="relative grid grid-cols-1 md:grid-cols-5 gap-8 items-center">
+                <div class="md:col-span-3 hero-in">
+            <span class="chip-light inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold">
+              <img class="h-5 w-5" src="logo.png" alt=""> About NutriScan
+            </span>
+                    <h1 class="font-display font-semibold text-4xl md:text-5xl lg:text-6xl leading-[1.05] mt-5">
+                        Know what's on your plate.
+                    </h1>
+                    <p class="mt-4 text-sm md:text-base leading-relaxed opacity-90 max-w-md">
+                        Take a photo of your meal and NutriScan does the rest: it reads the food, estimates the portion and logs
+                        your calories and macros.
+                    </p>
+                    <div class="flex flex-wrap gap-3 mt-7">
+                        <a href="Scanner.html"
+                           class="font-bold px-6 py-3.5 rounded-xl focus-ring text-sm"
+                           style="background:#fff; color:var(--forest);">Scan a meal</a>
+                        <a href="#how"
+                           class="chip-light font-semibold px-6 py-3.5 rounded-xl focus-ring text-sm">See how it works</a>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2 flex justify-center">
+                    <img class="hero-img w-44 sm:w-56 md:w-64" src="scan.png" alt="Scanning a plate of food">
+                </div>
+            </div>
+        </section>
+
+        <!-- STAT BAND -->
+        <section class="stat-card mt-6 md:mt-8 p-0 overflow-hidden">
+            <div class="grid grid-cols-2 sm:grid-cols-4">
+                <div class="band-item p-5 md:p-6 text-center">
+                    <p class="font-display font-semibold text-3xl" style="color:var(--forest)">1 tap</p>
+                    <p class="text-xs mt-1" style="color:var(--ink-soft)">to scan a meal</p>
+                </div>
+                <div class="band-item p-5 md:p-6 text-center">
+                    <p class="font-display font-semibold text-3xl" style="color:var(--apricot-deep)">4</p>
+                    <p class="text-xs mt-1" style="color:var(--ink-soft)">macros tracked</p>
+                </div>
+                <div class="band-item p-5 md:p-6 text-center">
+                    <p class="font-display font-semibold text-3xl" style="color:var(--sage-deep)">3</p>
+                    <p class="text-xs mt-1" style="color:var(--ink-soft)">portion sizes</p>
+                </div>
+                <div class="band-item p-5 md:p-6 text-center">
+                    <p class="font-display font-semibold text-3xl" style="color:#6C4EA3">24/7</p>
+                    <p class="text-xs mt-1" style="color:var(--ink-soft)">meal history</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MISSION -->
+        <section class="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6 md:mt-8">
+            <div class="stat-card lg:col-span-3 flex flex-col justify-center">
+                <p class="text-xs font-semibold uppercase tracking-wide" style="color:var(--ink-soft)">Our mission</p>
+                <h2 class="font-display font-semibold text-2xl md:text-3xl mt-2 leading-tight" style="color:var(--ink)">
+                    Healthy eating shouldn't feel like homework.
+                </h2>
+                <p class="mt-4 text-sm md:text-base leading-relaxed" style="color:var(--ink-soft)">
+                    Most food trackers ask you to search, weigh and type every ingredient. We think that's why people give up
+                    after a week. NutriScan turns a photo into a logged meal, so tracking takes seconds instead of minutes.
+                </p>
+                <p class="mt-3 text-sm md:text-base leading-relaxed" style="color:var(--ink-soft)">
+                    Whether you're building muscle, managing your weight, or just curious, we want tracking to be quick,
+                    accurate and kind.
+                </p>
+            </div>
+
+            <div class="lg:col-span-2 rounded-[22px] p-6 md:p-8 flex flex-col justify-between border"
+                 style="background:var(--cream-2); border-color:var(--line);">
+                <div class="flex items-center gap-3">
+                    <div class="icon-tile" style="background:#fff; border:1px solid var(--line);">
+                        <img src="water.png" alt="">
+                    </div>
+                    <div>
+                        <p class="font-display font-semibold text-lg" style="color:var(--ink)">Beyond the plate</p>
+                        <p class="text-xs" style="color:var(--ink-soft)">Small habits add up</p>
+                    </div>
+                </div>
+                <p class="text-sm leading-relaxed mt-5" style="color:var(--ink-soft)">
+                    Your dashboard also tracks your daily water goal, your streak and your body stats, so one screen shows how
+                    your day is going.
+                </p>
+                <a href="Dashboard.html"
+                   class="mt-5 inline-flex items-center gap-1.5 text-sm font-bold focus-ring rounded-md w-fit"
+                   style="color:var(--forest)">Open dashboard <span>→</span></a>
+            </div>
+        </section>
+
+        <!-- HOW IT WORKS -->
+        <section id="how" class="stat-card mt-6 md:mt-8 scroll-mt-6">
+            <h2 class="font-display font-semibold text-2xl md:text-3xl" style="color:var(--ink)">How it works</h2>
+            <p class="text-sm mt-1" style="color:var(--ink-soft)">From photo to logged meal in three steps.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-5 mt-8">
+
+                <div class="step-line text-center">
+                    <div class="w-11 h-11 mx-auto rounded-full flex items-center justify-center font-display font-semibold text-white relative z-10"
+                         style="background:var(--forest)">1</div>
+                    <img class="h-20 w-20 mx-auto mt-4 object-contain" src="pic.png" alt="">
+                    <p class="font-semibold mt-2" style="color:var(--ink)">Snap your plate</p>
+                    <p class="text-sm mt-1 leading-relaxed max-w-[16rem] mx-auto" style="color:var(--ink-soft)">
+                        Use the scanner, or add a meal manually if you prefer.
+                    </p>
+                </div>
+
+                <div class="step-line text-center">
+                    <div class="w-11 h-11 mx-auto rounded-full flex items-center justify-center font-display font-semibold text-white relative z-10"
+                         style="background:var(--apricot-deep)">2</div>
+                    <img class="h-20 w-20 mx-auto mt-4 object-contain" src="scan.png" alt="">
+                    <p class="font-semibold mt-2" style="color:var(--ink)">We read the food</p>
+                    <p class="text-sm mt-1 leading-relaxed max-w-[16rem] mx-auto" style="color:var(--ink-soft)">
+                        Ingredients and portion size are matched to nutrition data.
+                    </p>
+                </div>
+
+                <div class="step-line text-center">
+                    <div class="w-11 h-11 mx-auto rounded-full flex items-center justify-center font-display font-semibold text-white relative z-10"
+                         style="background:var(--sage-deep)">3</div>
+                    <img class="h-20 w-20 mx-auto mt-4 object-contain" src="barchart.png" alt="">
+                    <p class="font-semibold mt-2" style="color:var(--ink)">Track your day</p>
+                    <p class="text-sm mt-1 leading-relaxed max-w-[16rem] mx-auto" style="color:var(--ink-soft)">
+                        Calories and macros update instantly, with stats to spot trends.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VALUES -->
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5 mt-6 md:mt-8">
+            <div class="stat-card lift">
+                <div class="icon-tile text-2xl" style="background:#E3EFE5; color:var(--forest)">◎</div>
+                <h3 class="font-display font-semibold text-xl mt-4" style="color:var(--ink)">Simple</h3>
+                <p class="text-sm mt-1.5 leading-relaxed" style="color:var(--ink-soft)">
+                    No clutter and no confusing numbers. Just what you need to know about your meal.
+                </p>
+            </div>
+            <div class="stat-card lift">
+                <div class="icon-tile text-2xl" style="background:#FBEBD6; color:var(--apricot-deep)">✦</div>
+                <h3 class="font-display font-semibold text-xl mt-4" style="color:var(--ink)">Personal</h3>
+                <p class="text-sm mt-1.5 leading-relaxed" style="color:var(--ink-soft)">
+                    Goals and suggestions are tuned to your body stats and eating habits.
+                </p>
+            </div>
+            <div class="stat-card lift">
+                <div class="icon-tile text-2xl" style="background:#E9E2F4; color:#6C4EA3">❋</div>
+                <h3 class="font-display font-semibold text-xl mt-4" style="color:var(--ink)">Private</h3>
+                <p class="text-sm mt-1.5 leading-relaxed" style="color:var(--ink-soft)">
+                    Your meals and measurements are yours. We only use them to help you.
+                </p>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="mt-6 md:mt-8">
+            <h2 class="font-display font-semibold text-2xl md:text-3xl" style="color:var(--ink)">Common questions</h2>
+            <div class="flex flex-col gap-3 mt-5">
+                <details class="faq" open>
+                    <summary>How accurate are the estimates <span class="plus">+</span></summary>
+                    <p class="text-sm leading-relaxed" style="color:var(--ink-soft)">
+                        Scans give a close estimate based on the food and portion size. If something looks off, edit the meal
+                        and your totals update right away.
+                    </p>
+                </details>
+                <details class="faq">
+                    <summary>Can I log a meal without a photo <span class="plus">+</span></summary>
+                    <p class="text-sm leading-relaxed" style="color:var(--ink-soft)">
+                        Yes. Use "Add manually" on the dashboard, pick the meal type, enter the food and choose a portion size.
+                    </p>
+                </details>
+                <details class="faq">
+                    <summary>Where do my goals come from <span class="plus">+</span></summary>
+                    <p class="text-sm leading-relaxed" style="color:var(--ink-soft)">
+                        Your calorie and macro targets are based on the details in your profile. Update your height or weight
+                        and they adjust.
+                    </p>
+                </details>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="about-hero texture mt-6 md:mt-8 p-7 md:p-10">
+            <span class="blob blob-1"></span>
+            <div class="relative flex items-center justify-between flex-wrap gap-5">
+                <div>
+                    <h2 class="font-display font-semibold text-2xl md:text-3xl">Questions or feedback?</h2>
+                    <p class="text-sm md:text-base opacity-90 mt-1.5">We'd love to hear how NutriScan is working for you.</p>
+                </div>
+                <a href="mailto:hello@nutriscan.app"
+                   class="font-bold px-6 py-3.5 rounded-xl focus-ring text-sm w-full sm:w-auto text-center"
+                   style="background:#fff; color:var(--forest);">Contact us</a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Mobile bottom nav -->
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 border-t flex justify-around items-center py-2 z-50 shadow-lg"
+         style="background:var(--card); border-color:var(--line);">
+        <a href="Dashboard.html" class="flex flex-col items-center gap-0.5 text-xs font-medium p-2 transition-all"
+           style="color:var(--ink-soft)">
+            <span class="text-xl">⌂</span>
+            <span>Home</span>
+        </a>
+        <a href="History.html" class="flex flex-col items-center gap-0.5 text-xs font-medium p-2 transition-all"
+           style="color:var(--ink-soft)">
+            <span class="text-xl">↻</span>
+            <span>History</span>
+        </a>
+        <a href="Stats.html" class="flex flex-col items-center gap-0.5 text-xs font-medium p-2 transition-all"
+           style="color:var(--ink-soft)">
+            <span class="text-xl">▤</span>
+            <span>Stats</span>
+        </a>
+        <a href="profile.html" class="flex flex-col items-center gap-0.5 text-xs font-medium p-2 transition-all"
+           style="color:var(--ink-soft)">
+            <span class="text-xl">◐</span>
+            <span>Profile</span>
+        </a>
+        <a href="About.html" class="flex flex-col items-center gap-0.5 text-xs font-bold p-2 transition-all"
+           style="color:var(--forest)">
+            <span class="text-xl">ⓘ</span>
+            <span>About</span>
+        </a>
+    </nav>
+
+</div>
+
+</body>
+
+</html>

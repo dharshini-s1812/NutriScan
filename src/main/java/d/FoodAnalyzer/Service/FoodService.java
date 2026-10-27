@@ -7,6 +7,8 @@ import d.FoodAnalyzer.Repository.FoodRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -49,6 +51,15 @@ public class FoodService {
                 "type", "FOOD",
                 "food", response
         );
+
+    }
+
+    public List<Food> searchFoodNames(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return List.of();
+        }
+
+        return repository.searchFoodNames(query.trim());
     }
 }
 

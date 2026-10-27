@@ -1,4 +1,4 @@
-const SERVER_URL = "https://nutriscan-production-186b.up.railway.app"
+const SERVER_URL = "http://localhost:8080"
 let token = localStorage.getItem("token")
  const userId = localStorage.getItem("userId");
 
@@ -62,8 +62,12 @@ function AddUserMeal(){
     }
 
     const data = await response.json();
+
     showToast("Meal added successfully!", "success");
-    GetUserMeal();
+
+    setTimeout(() => {
+        window.location.reload();
+    }, 800);
 })
 .catch(err => {
     console.error(err);
@@ -187,40 +191,77 @@ document.addEventListener('keydown', function(e){
 
 
 async function loadBMI() {
-
-    const response = await fetch(`https://nutriscan-production-186b.up.railway.app/dashboard?userId=${userId}`, {
-        headers: {
-            Authorization: `Bearer ${token}`
+    try {
+        const response = await fetch(`${SERVER_URL}/dashboard?userId=${userId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            console.error("Error:", response.status, await response.text());
+            return;
         }
-    });
-    if (!response.ok) {
-        console.error("Error:", response.status, await response.text());
-        return;
+        const data = await response.json();
+        renderBodyStats(data);
+    } catch (err) {
+        console.error("Could not load body stats:", err);
     }
-    const data = await response.json();
-    document.getElementById("bmiValue").textContent = data.bmi;
-    document.getElementById("bmiCategory").textContent = data.category;
-    document.getElementById("height").textContent = data.height;
-    document.getElementById("weight").textContent = data.weight;
-    movePointer(data.bmi);
 }
 
-function movePointer(bmi) {
+function renderBodyStats(data) {
+    // Use the server's BMI if present; otherwise calculate it here from height & weight,
+    // so the card works even before the backend is rebuilt.
+    let bmi = Number(data.bmi);
+    if (!(bmi > 0)) {
+        const h = Number(data.height) / 100;
+        const w = Number(data.weight);
+        bmi = (h > 0 && w > 0) ? Math.round((w / (h * h)) * 10) / 10 : 0;
+    }
+    const hasBmi = Number.isFinite(bmi) && bmi > 0;
+    const category = (data.bmi > 0 && data.category) ? data.category : bmiCategoryFor(bmi);
 
+    document.getElementById("height").textContent = data.height ?? "--";
+    document.getElementById("weight").textContent = data.weight ?? "--";
+    document.getElementById("bmiValue").textContent = hasBmi ? bmi.toFixed(1) : "--";
+
+    const catEl = document.getElementById("bmiCategory");
+    catEl.textContent = hasBmi ? category : "Add your height and weight in Profile";
+    const colors = { Underweight: "#4A7FA7", Normal: "#2D6A4F", Overweight: "#B7791F", Obese: "#C44545" };
+    catEl.style.color = colors[category.split(" ")[0]] || "#6B6459";
+
+    if (hasBmi) movePointer(bmi);
+}
+
+function bmiCategoryFor(bmi) {
+    if (!(bmi > 0)) return "";
+    if (bmi < 18.5) return "Underweight";
+    if (bmi < 25) return "Normal weight";
+    if (bmi < 30) return "Overweight";
+    return "Obese";
+}
+
+// The bar is split into 4 equal zones (Underweight / Normal / Overweight / Obese),
+// so the pointer lands inside the zone that matches the BMI category label.
+function movePointer(bmi) {
     const pointer = document.getElementById("bmiPointer");
     let percent;
-    if (bmi <= 15)
-        percent = 0;
-    else if (bmi >= 40)
-        percent = 100;
-    else
-        percent = ((bmi - 15) / (40 - 15)) * 100;
-    percent = Math.max(0, Math.min(percent, 100));
+    if (bmi < 18.5) {
+        percent = (Math.max(bmi, 13) - 13) / (18.5 - 13) * 25;
+    } else if (bmi < 25) {
+        percent = 25 + (bmi - 18.5) / (25 - 18.5) * 25;
+    } else if (bmi < 30) {
+        percent = 50 + (bmi - 25) / (30 - 25) * 25;
+    } else {
+        percent = 75 + Math.min((bmi - 30) / 10, 1) * 25;
+    }
+    // keep the knob inside the bar ends
+    percent = Math.max(2, Math.min(percent, 98));
     pointer.style.left = `${percent}%`;
+    pointer.style.opacity = "1";
 }
 
 async function loadDashboard() {
-    const response = await fetch(`https://nutriscan-production-186b.up.railway.app/dashboard?userId=${userId}`, {
+    const response = await fetch(`http://localhost:8080/dashboard?userId=${userId}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -399,9 +440,9 @@ function renderSuggestions() {
     container.innerHTML = picked.map(s => `
         <div class="suggestion-card flex items-start gap-3 p-3 rounded-xl" style="background:var(--cream-2)">
             <div class="w-6 h-6 shrink-0 overflow-hidden flex items-center justify-center mt-0.5">
-                <img 
-                    src="${s.icon}" 
-                    alt="Suggestion icon" 
+                <img
+                    src="${s.icon}"
+                    alt="Suggestion icon"
                     class="w-10 h-10 object-contain"
                 />
             </div>
@@ -422,7 +463,7 @@ async function loadProfileForSuggestions() {
         userProfile = await response.json();
     } catch (err) {
         console.error(err);
-        userProfile = null; 
+        userProfile = null;
         } finally {
         renderSuggestions();
     }
@@ -449,6 +490,83 @@ document.addEventListener("DOMContentLoaded", () => {
   greetingEl.textContent = greeting;
   const options = { weekday: 'long', month: 'long', day: 'numeric' };
   const formattedDate = now.toLocaleDateString('en-US', options);
-  
+
   dateEl.textContent = `${formattedDate} · Here's where today stands.`;
+});
+
+
+// ---- Food name autocomplete (searches the food database as you type) ----
+// ---- Food name autocomplete ----
+document.addEventListener("DOMContentLoaded", () => {
+
+    const input = document.getElementById("am-food-name");
+    const list = document.getElementById("am-food-list");
+
+    console.log("Autocomplete init:", input, list);
+
+    if (!input || !list) {
+        console.error("Autocomplete elements not found");
+        return;
+    }
+
+    let timer;
+
+    input.addEventListener("input", () => {
+
+        clearTimeout(timer);
+
+        const q = input.value.trim();
+
+        console.log("Typed:", q);
+
+        if (q.length < 2) {
+            list.innerHTML = "";
+            return;
+        }
+
+        timer = setTimeout(async () => {
+
+            try {
+
+                const url =
+                    `${SERVER_URL}/api/food/search?q=${encodeURIComponent(q)}`;
+
+                console.log("Searching:", url);
+
+                const res = await fetch(url, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                console.log("Response status:", res.status);
+
+                if (!res.ok) {
+                    console.error("Search failed:", await res.text());
+                    return;
+                }
+
+                const foods = await res.json();
+
+                console.log("Foods received:", foods);
+
+                list.innerHTML = "";
+
+                foods.forEach(f => {
+
+                    const opt = document.createElement("option");
+
+                    opt.value = f.foodName;
+
+                    list.appendChild(opt);
+                });
+
+            } catch (e) {
+
+                console.error("Autocomplete error:", e);
+
+            }
+
+        }, 200);
+    });
 });

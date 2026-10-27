@@ -513,6 +513,16 @@
         font-size: 1.8rem;
       }
     }
+
+    .btn-primary {
+      background: var(--forest);
+      color: #fff;
+      font-weight: 600;
+      border-radius: 0.75rem;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+    .btn-primary:hover { filter: brightness(1.1); }
+    .btn-primary:active { transform: scale(0.98); }
   </style>
 </head>
 
@@ -533,7 +543,17 @@
         <a href="History.html" class="nav-item"><span class="ic">↻</span> History</a>
         <a href="Stats.html" class="nav-item"><span class="ic">▤</span> Statistics</a>
         <a href="profile.html" class="nav-item active"><span class="ic">◐</span> Profile</a>
+        <a href="About.html" class="nav-item focus-ring"><span class="ic">ⓘ</span> About</a>
+
       </nav>
+
+      <div class="mt-auto"></div>
+
+      <div class="p-4 mx-4 mb-6 rounded-2xl texture" style="background:var(--cream-2); border:1px solid var(--line)">
+        <p class="text-sm font-semibold" style="color:var(--forest)">Hungry?</p>
+        <p class="text-xs mt-1" style="color:var(--ink-soft)">Snap your next meal and we'll log it for you.</p>
+        <a href="Scanner.html" class="btn-primary focus-ring mt-3 inline-flex items-center justify-center w-full py-2 text-xs">Scan a meal</a>
+      </div>
 
     </aside>
 

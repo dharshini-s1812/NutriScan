@@ -349,48 +349,6 @@
       font-size:1.3rem; color:var(--ink-soft); line-height:1;
       padding:0.2rem;
     }
-    #toast{
-      position: fixed;
-      top: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-20px);
-      min-width: 320px;
-      max-width: 90%;
-      padding: 14px 18px;
-      border-radius: 14px;
-      color: white;
-      font-size: 14px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      opacity: 0;
-      pointer-events: none;
-      transition: all .35s ease;
-      box-shadow: 0 15px 35px rgba(0,0,0,.18);
-      z-index: 9999;
-  }
-
-  #toast.show{
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-  }
-
-  #toast.success{
-      background:#1B4332;
-  }
-
-  #toast.error{
-      background:#D62828;
-  }
-
-  #toast.warning{
-      background:#E07A2C;
-  }
-
-  #toast.info{
-      background:#2563EB;
-  }
   </style>
 </head>
 
@@ -425,10 +383,9 @@
           <div>
             <label for="age" class="field-label">Age</label>
             <div class="unit-input-wrap">
-              <input id="age" type="number" placeholder="20" min="10" max="100" step="1" inputmode="numeric" class="field-input focus-ring" required>
+              <input id="age" type="number" placeholder="20" min="10" max="100" class="field-input focus-ring" required>
               <span class="unit-suffix">yrs</span>
             </div>
-            <p class="text-xs mt-1 hidden" id="age-error" style="color:var(--apricot-deep)">Enter an age between 10 and 100.</p>
           </div>
           <div>
             <label class="field-label">Gender</label>
@@ -450,18 +407,16 @@
           <div>
             <label for="height" class="field-label">Height</label>
             <div class="unit-input-wrap">
-              <input id="height" type="number" placeholder="160" min="50" max="250" step="1" inputmode="numeric" class="field-input focus-ring" required>
+              <input id="height" type="number" placeholder="160" class="field-input focus-ring" required>
               <span class="unit-suffix">cm</span>
             </div>
-            <p class="text-xs mt-1 hidden" id="height-error" style="color:var(--apricot-deep)">Enter a height between 50 and 250 cm.</p>
           </div>
           <div>
             <label for="weight" class="field-label">Weight</label>
             <div class="unit-input-wrap">
-              <input id="weight" type="number" placeholder="55" min="10" max="400" step="1" inputmode="numeric" class="field-input focus-ring" required>
+              <input id="weight" type="number" placeholder="55" class="field-input focus-ring" required>
               <span class="unit-suffix">kg</span>
             </div>
-            <p class="text-xs mt-1 hidden" id="weight-error" style="color:var(--apricot-deep)">Enter a weight between 10 and 400 kg.</p>
           </div>
         </div>
 
@@ -580,15 +535,11 @@
     </div>
   </div>
 </div>
-<div id="toast" style="
-  position:fixed; bottom:1.75rem; left:50%; transform:translateX(-50%) translateY(12px);
-  background:#1B4332; color:#fff; padding:0.7rem 1.4rem; border-radius:10px;
-  font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:500;
-  opacity:0; pointer-events:none; z-index:60;
-  transition:opacity 0.22s ease, transform 0.22s ease;
-" class="w-[calc(100%-2rem)] max-w-sm text-center" role="status" aria-live="polite"></div>
 
 
+<div id="toast"
+     style="position:fixed; bottom:1.75rem; left:50%; transform:translateX(-50%) translateY(12px); background:#1B4332; color:#fff; padding:0.7rem 1.4rem; border-radius:10px; font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:500; opacity:0; pointer-events:none; z-index:60; transition:opacity 0.22s ease, transform 0.22s ease; max-width:90vw; text-align:center;"
+     role="status" aria-live="polite"></div>
 
 <script src="preferences.js"></script>
 </body>
